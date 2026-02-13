@@ -170,3 +170,35 @@ footer {
     color: #666;
     margin-top: 30px;
 }
+
+.glossary-list {
+    max-width: 600px; /* Matches the search-container width */
+    margin: 40px auto 0; /* Centers the list and adds space from search bar */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between boxes */
+    text-align: left; /* Aligns text inside boxes to the left */
+}
+
+.glossary-item {
+    background-color: transparent;
+    border: 1px solid #5d7285; /* Slate blue/grey border from image */
+    border-radius: 2px; /* Slight rounding, mostly sharp */
+    padding: 15px 20px;
+    width: 100%;
+}
+
+.glossary-item h3 {
+    font-family: 'Hahmlet', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #002B49; /* Dark blue matching logo/nav */
+    margin-bottom: 5px;
+}
+
+.glossary-item p {
+    font-family: 'Hahmlet', serif;
+    font-size: 0.9rem;
+    color: #555; /* Grey text for description */
+    margin: 0;
+}
