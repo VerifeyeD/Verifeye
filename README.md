@@ -1,3 +1,9 @@
 # Verifeye
 Verify the truth. From AI insight to deception detection, we keep your eye on what’s real. 
-![Verifeye Logo](assets/images/logo.png)
+<p align="center">
+  <img src="assets/images/logo.png" alt="Verifeye Logo" width="800">
+</p>
+
+<h1 align="center">Verifeye</h1>
+
+<p align="center">
