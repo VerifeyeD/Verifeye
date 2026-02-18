@@ -4,6 +4,4 @@ Verify the truth. From AI insight to deception detection, we keep your eye on wh
   <img src="assets/images/logo.png" alt="Verifeye Logo" width="800">
 </p>
 
-<h1 align="center">Verifeye</h1>
-
 <p align="center">
