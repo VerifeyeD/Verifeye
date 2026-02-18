@@ -1,0 +1,264 @@
+/* General Reset */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Hahmlet', serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    color: #333;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Header Styles */
+.header {
+    background-color: #fff;
+    padding: 20px 40px;
+    border-bottom: 3px solid #dcdcdc; /* Thicker border to match image */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon svg {
+    width: 40px;
+    height: 40px;
+}
+
+.logo span {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a2f4d;
+}
+
+.nav {
+    display: flex;
+    gap: 40px;
+}
+
+.nav a {
+    color: #555;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.nav a:hover, .nav a.active {
+    color: #1a2f4d;
+    font-weight: 700;
+}
+
+.user-icon {
+    color: #000;
+    cursor: pointer;
+}
+
+/* Container Styles */
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+    position: relative;
+}
+
+.discussions-title {
+    font-size: 56px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 5px;
+    margin-top: 0;
+}
+
+.discussions-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+    margin-top: 0;
+}
+
+/* Search Bar */
+.search-container {
+    margin-bottom: 20px;
+}
+
+.search-bar {
+    width: 100%;
+    padding: 12px 20px 12px 50px;
+    border: 2px solid #a0aab5; /* Grey-blue border */
+    border-radius: 6px;
+    background-color: #d8dce1; /* Light grey background */
+    font-family: 'Hahmlet', serif;
+    font-size: 24px;
+    color: #555;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="%23333" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: 15px center;
+    background-size: 24px;
+}
+
+.search-bar::placeholder {
+    color: #777;
+}
+
+.post-thread-btn {
+    float: right;
+    background-color: #0a2540; /* Dark Navy */
+    color: white;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 30px;
+    clear: both;
+}
+
+/* Thread List Box */
+.thread-list-container {
+    clear: both;
+    margin-top: 60px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    min-height: 300px; /* To match the box height in image */
+}
+
+.thread-count {
+    padding: 15px 20px;
+    font-size: 16px;
+    color: #888;
+    border-bottom: 1px solid #ddd;
+}
+
+.thread-item {
+    padding: 20px;
+}
+
+.thread-meta {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.avatar-circle {
+    width: 24px;
+    height: 24px;
+    background-color: #000;
+    border-radius: 50%;
+    margin-right: 8px;
+    position: relative;
+}
+
+/* Pseudo-element to mimic the white figure inside avatar */
+.avatar-circle::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 12px;
+    height: 12px;
+    background-color: white;
+    border-radius: 50%;
+    clip-path: polygon(20% 100%, 80% 100%, 100% 100%, 50% 0%, 0% 100%); /* Rough shape */
+}
+
+.username {
+    color: #4a90e2; /* Blue tint for username */
+    margin-right: 5px;
+}
+
+.dot {
+    margin: 0 5px;
+}
+
+.tag {
+    color: #999;
+}
+
+.thread-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #444;
+    display: block;
+}
+
+/* Footer Styles */
+.footer {
+    background-color: #eaf3fa; /* Light Blue Footer */
+    padding: 40px 0 20px;
+    margin-top: 50px;
+    border-top: 1px solid #ddd;
+}
+
+.footer-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 150px;
+    margin-bottom: 20px;
+}
+
+.brand-section {
+    flex: 1.5; /* Slightly wider */
+    padding-right: 20px;
+}
+
+.about-section {
+    flex: 1.5;
+}
+
+.footer-section h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #000;
+}
+
+.footer-section p {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #555;
+    margin: 0;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 8px;
+}
+
+.footer-section ul li a {
+    font-size: 15px;
+    color: #555;
+}
+
+.copyright {
+    text-align: center;
+    font-size: 11px;
+    color: #666;
+    margin-top: 30px;
+    font-weight: 600;
+}
