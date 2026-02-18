@@ -1,0 +1,199 @@
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "hahmlet", sans-serif;
+        }
+
+        body{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(90deg, #e2e2e2, #c9d6ff);
+        }
+
+        .container{
+            position: relative;
+            width: 850px;
+            height: 550px;
+            background: #fff;
+            border-radius: 30px;
+            box-shadow: 0 0 30px rgba(0,0,0,.2);
+            overflow: hidden;
+        }
+
+        .form-box{
+            position: absolute;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            /* background: #f3eff5; */
+            display: flex;
+            align-items: center;
+            color: #151515;
+            text-align: center;
+            padding: 40px;
+            transition: 0.5s ease-in-out 0.5s;
+            
+        }
+
+        .container.active .form-box{
+            right: 50%;
+        }
+
+        .form-box.register{
+            visibility: hidden;
+        }
+
+        .container.active .form-box.register{
+            visibility: visible;
+            z-index: 5;
+        }
+
+        .form-box.login{
+            visibility: visible;
+            z-index: 1;
+        }
+
+        .container.active .form-box.login{
+            visibility: hidden;
+        }
+
+        form{
+            width: 100%;
+        }
+
+        .container h1{
+            font-size: 27px;
+            margin: -10px 0;
+        }
+
+        .input-box{
+            position: relative;
+            margin: 30px;
+        }
+
+        .input-box input{
+            width: 100%;
+            padding: 13px 50px 13px 20px;
+            background: #f3eff5;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: #151515;
+            font-weight: 50;
+        }
+
+        .input-box input::placeholder{
+            color: #151515;
+            font-weight: 10;
+            opacity: 50%;
+        }
+        
+        .input-box i{
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #151515;
+            opacity: 50%    ;
+        }
+
+        .forgot-link{
+            margin: -15px 0 15px;
+        }
+
+        .forgot-link a{
+            font-size: 14px;
+            color: #151515;
+            text-decoration: none;
+        }
+
+        .btn{
+            width: 160px;
+            height: 48px;
+            background: #02253b;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,.1);
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #f3eff5;
+            font-weight: 600;
+        }
+
+        .btn:hover{
+            transform: scale(0.95);
+            transition: 0.5s;
+        }
+
+        .toggle-box{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .toggle-box::before{
+            content: '';
+            position: absolute;
+            left: -250%;
+            width: 300%;
+            height: 100%;
+            background: #02253b;
+            border-radius: 150px;
+            z-index: 2;
+            transition: 1.7s ease-in-out;
+        }
+
+        .container.active .toggle-box::before{
+            left: 50%;
+        }
+
+        .toggle-panel{
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            /* background: #02253b; */
+            color: #f3eff5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            transition: 1s ease-in-out 0.6s;
+            pointer-events: all;
+        }
+
+        .toggle-panel.toggle-left{
+            left: 0;
+        }
+
+        .container.active .toggle-panel.toggle-left{
+            left: -50%;
+            transition-delay: 0.s;
+        }
+
+        .toggle-panel.toggle-right{
+            right: -400px;
+        }
+
+        .container.active .toggle-panel.toggle-right{
+            right: 0;
+            transition-delay: 0.8s;
+        }
+        .toggle-panel p{
+            margin-bottom: 20px;
+        }
+
+        .toggle-panel .btn{
+            width: 160px;
+            height: 46px;
+            background: transparent;
+            border: 2px solid #f3eff5;
+            box-shadow: none;
+        }
