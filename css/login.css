@@ -10,7 +10,9 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(90deg, #e2e2e2, #c9d6ff);
+            background: linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(../assets/images/blurbg.png);
+            background-size: cover;
+            background-position: center;
         }
 
         .container{
