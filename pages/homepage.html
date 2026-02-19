@@ -20,12 +20,17 @@
                 <h2><div class="logoname">VerifEye</div></h2> 
             </div>
             <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Article</a></li>
-                <li><a href="#">Glossary</a></li>
-                <li><a href="#">Self-assessment</a></li>
+                <li><a href="../pages/homepage.html">Home</a></li>
+                <li><a href="../pages/article.html">Article</a></li>
+                <li><a href="../pages/glossary.html">Glossary</a></li>
+                <li><a href="../pages/selfassessment.html">Self-assessment</a></li>
             </ul>
             <button class="btn-login">Login</button>
+            <script>
+                document.querySelector('.btn-login').addEventListener('click', function() {
+                    window.location.href = '../pages/login.html';
+                });
+            </script>
         </nav>
 
         <div class="hero-content">
