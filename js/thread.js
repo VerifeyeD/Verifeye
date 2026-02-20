@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- 1. SIMPLE FORMATTING TOOLS (Bold, Italic, etc.) ---
+    // --- 1. SIMPLE FORMATTING TOOLS ---
     const btnBold = document.getElementById('btnBold');
     const btnItalic = document.getElementById('btnItalic');
     const btnUnderline = document.getElementById('btnUnderline');
@@ -36,67 +36,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnColor = document.getElementById('btnColor');
     const colorInput = document.getElementById('colorPickerInput');
 
-    // Trigger hidden color input on icon click
     btnColor.addEventListener('click', () => {
         colorInput.click();
     });
 
-    // Apply color when user selects a color
     colorInput.addEventListener('input', (e) => {
         exec('foreColor', e.target.value);
-        // Optional: Update the 'A' icon underline color
         btnColor.style.borderBottomColor = e.target.value;
         btnColor.style.color = e.target.value;
     });
 
-    // --- 3. HIGHLIGHT TOGGLE LOGIC ---
-    const btnHighlight = document.getElementById('btnHighlight');
-    
-    btnHighlight.addEventListener('click', () => {
-        // Check if the current selection already has a background color
-        const currentColor = document.queryCommandValue('hiliteColor');
-        
-        // Note: Browsers return 'transparent', 'rgba(0, 0, 0, 0)', or empty string if no color.
-        const isTransparent = !currentColor || currentColor === 'transparent' || currentColor === 'rgba(0, 0, 0, 0)';
-
-        if (isTransparent) {
-            // Add Highlight (Yellow)
-            exec('hiliteColor', '#ffeb3b');
-        } else {
-            // Remove Highlight (Set to transparent)
-            exec('hiliteColor', 'transparent');
-        }
-    });
-
-    // --- 4. IMAGE UPLOAD LOGIC ---
+    // --- 3. IMAGE UPLOAD LOGIC ---
     const btnImage = document.getElementById('btnImage');
     const imageInput = document.getElementById('imageUploadInput');
 
-    // Trigger hidden file input
     btnImage.addEventListener('click', () => {
         imageInput.click();
     });
 
-    // Handle file selection
     imageInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Insert the image into the editor
                 exec('insertImage', e.target.result);
             };
             reader.readAsDataURL(file);
         }
-        // Reset input so same file can be selected again if needed
         imageInput.value = '';
     });
 
-    // --- 5. DROPDOWN LOGIC ---
+    // --- 4. FORMAT DROPDOWN LOGIC ---
     const dropdownBtn = document.getElementById('paragraphDropdownBtn');
     const dropdownMenu = document.getElementById('paragraphDropdownMenu');
     const currentFormatSpan = document.getElementById('currentFormat');
-    const dropdownOptions = document.querySelectorAll('.dropdown-option');
+    const dropdownOptions = document.querySelectorAll('#paragraphDropdownMenu .dropdown-option');
 
     dropdownBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -114,13 +88,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- 5. EMOJI PICKER LOGIC ---
+    const btnEmoji = document.getElementById('btnEmoji');
+    const emojiMenu = document.getElementById('emojiDropdownMenu');
+    const emojiOptions = document.querySelectorAll('.emoji-option');
+
+    btnEmoji.addEventListener('click', (e) => {
+        e.stopPropagation();
+        emojiMenu.classList.toggle('show');
+    });
+
+    emojiOptions.forEach(emoji => {
+        emoji.addEventListener('mousedown', (e) => {
+            e.preventDefault(); // Prevents editor from losing focus
+            // Insert the emoji text into the editor
+            exec('insertText', emoji.textContent);
+            emojiMenu.classList.remove('show');
+        });
+    });
+
+    // Close dropdowns when clicking outside
     document.addEventListener('click', (e) => {
         if (!dropdownBtn.contains(e.target)) {
             dropdownMenu.classList.remove('show');
         }
+        if (!btnEmoji.contains(e.target)) {
+            emojiMenu.classList.remove('show');
+        }
     });
 
-    // --- 6. TOPIC & TAGS LOGIC (Preserved from previous version) ---
+    // --- 6. TOPIC & TAGS LOGIC ---
     const topicLabels = document.querySelectorAll('.topic-option');
     topicLabels.forEach(label => {
         label.addEventListener('click', () => {
