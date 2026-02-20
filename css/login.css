@@ -19,10 +19,11 @@
             position: relative;
             width: 850px;
             height: 550px;
-            background: #fff;
+            background: #c7c8c8 ;
             border-radius: 30px;
             box-shadow: 0 0 30px rgba(0,0,0,.2);
             overflow: hidden;
+            
         }
 
         .form-box{
@@ -33,7 +34,7 @@
             /* background: #f3eff5; */
             display: flex;
             align-items: center;
-            color: #151515;
+            color: #0e0d0e;
             text-align: center;
             padding: 40px;
             transition: 0.5s ease-in-out 0.5s;
@@ -79,12 +80,12 @@
         .input-box input{
             width: 100%;
             padding: 13px 50px 13px 20px;
-            background: #f3eff5;
+            background: #ececec;
             border-radius: 8px;
             border: none;
             outline: none;
             font-size: 16px;
-            color: #151515;
+            color: #0e0d0e;
             font-weight: 50;
         }
 
@@ -117,13 +118,13 @@
         .btn{
             width: 160px;
             height: 48px;
-            background: #02253b;
+            background: #222b3e;
             border-radius: 15px;
             box-shadow: 0 0 10px rgba(0,0,0,.1);
             border: none;
             cursor: pointer;
             font-size: 14px;
-            color: #f3eff5;
+            color: #ececec;
             font-weight: 600;
         }
 
@@ -146,8 +147,8 @@
             left: -250%;
             width: 300%;
             height: 100%;
-            background: #02253b;
-            border-radius: 150px;
+            background: #222b3e;
+            border-radius: 250px;
             z-index: 2;
             transition: 1.7s ease-in-out;
         }
@@ -196,6 +197,6 @@
             width: 160px;
             height: 46px;
             background: transparent;
-            border: 2px solid #f3eff5;
+            border: 2px solid #ececec;
             box-shadow: none;
         }

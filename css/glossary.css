@@ -1,12 +1,11 @@
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Hahmlet', serif; /* Moved back here so the button inherits it! */
 }
 
 body {
-    font-family: 'Hahmlet', serif;
     color: #333; 
     background-color: #fff;
     display: flex;
@@ -14,57 +13,77 @@ body {
     min-height: 100vh; 
 }
 
-
+/* --- HEADER & NAVIGATION (100% Exact Homepage Alignments) --- */
 header {
-    display: flex;
-    justify-content: space-between; 
-    align-items: center;
-    padding: 20px 50px;
-    max-width: 1200px;
-    margin: 0 auto;
     width: 100%;
+    padding: 0 10%; 
+    background-color: #fff;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
 }
 
 .logo {
-    height: 50px; 
-    display: block;
+    display: flex;
+    align-items: center;
+    height: 15px; /* Restored exactly as it is in your homepage! */
 }
 
+.logo img {
+    width: 60px;
+}
 
-.logo[src="YOUR_LOGO_HERE.png"] {
-    width: 150px;
-    background-color: #eee;
-    border: 1px dashed #999;
+.logoname {
+    font-family: 'Hahmlet', serif;
+    font-size: 25px;
+    color: #333; 
 }
 
 nav ul {
-    list-style: none;
     display: flex;
-    gap: 30px; 
+    list-style: none;
 }
 
-nav a {
+nav ul li {
+    margin: 0 20px;
+}
+
+nav ul li a {
     text-decoration: none;
-    color: #555;
-    font-size: 1.1rem;
-    font-weight: 300;
+    color: #333; 
+    transition: 0.3s;
 }
 
-
-nav a.active {
-    color: #002B49; 
-    font-weight: 700; 
+nav ul li a.active, nav ul li a:hover {
+    color: #06629b;
 }
 
+.btn-login {
+    padding: 10px 30px;
+    background: #596272;
+    color: #ececec;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.btn-login:hover {
+    transform: scale(1.05);
+    transition: 0.5s;
+}
 
 .header-line {
     border: none;
     border-top: 2px solid #ddd;
-    width: 95%;
+    width: 100%;
     margin: 0 auto;
 }
 
-
+/* --- MAIN CONTENT & GLOSSARY --- */
 main {
     flex: 1; 
     display: flex;
@@ -119,7 +138,39 @@ h1 {
     color: #000;
 }
 
+.glossary-list {
+    max-width: 600px; 
+    margin: 40px auto 0; 
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+    text-align: left; 
+}
 
+.glossary-item {
+    background-color: transparent;
+    border: 1px solid #5d7285; 
+    border-radius: 2px; 
+    padding: 15px 20px;
+    width: 100%;
+}
+
+.glossary-item h3 {
+    font-family: 'Hahmlet', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #002B49; 
+    margin-bottom: 5px;
+}
+
+.glossary-item p {
+    font-family: 'Hahmlet', serif;
+    font-size: 0.9rem;
+    color: #555; 
+    margin: 0;
+}
+
+/* --- FOOTER --- */
 footer {
     background-color: #EAF4FC; 
     padding: 50px 50px 20px 50px;
@@ -151,7 +202,6 @@ footer {
     color: #444;
 }
 
-
 .link-grid {
     display: grid;
     grid-template-columns: 1fr 1fr; 
@@ -169,36 +219,4 @@ footer {
     font-size: 0.75rem;
     color: #666;
     margin-top: 30px;
-}
-
-.glossary-list {
-    max-width: 600px; /* Matches the search-container width */
-    margin: 40px auto 0; /* Centers the list and adds space from search bar */
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Space between boxes */
-    text-align: left; /* Aligns text inside boxes to the left */
-}
-
-.glossary-item {
-    background-color: transparent;
-    border: 1px solid #5d7285; /* Slate blue/grey border from image */
-    border-radius: 2px; /* Slight rounding, mostly sharp */
-    padding: 15px 20px;
-    width: 100%;
-}
-
-.glossary-item h3 {
-    font-family: 'Hahmlet', serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #002B49; /* Dark blue matching logo/nav */
-    margin-bottom: 5px;
-}
-
-.glossary-item p {
-    font-family: 'Hahmlet', serif;
-    font-size: 0.9rem;
-    color: #555; /* Grey text for description */
-    margin: 0;
 }

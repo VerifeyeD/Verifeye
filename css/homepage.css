@@ -56,8 +56,9 @@ nav ul li a {
 }
 
 nav ul li a.active, nav ul li a:hover {
-    color: #06629b;
+    color: #77b1d4;
 }
+
 
 .btn-login {
     padding: 10px 30px;
@@ -118,4 +119,10 @@ nav ul li a.active, nav ul li a:hover {
     text-align: center;
     width: 100%;
     font-family: 'Hahmlet', sans-serif;
+}
+
+html {
+    scrollbar-gutter: stable;
+    overflow-y: scroll;
+
 }
