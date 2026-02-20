@@ -38,22 +38,37 @@
         </nav>
     </header>
 
+    <hr class="header-line">
+
     <main class="container main-layout">
-        <h1 class="page-title">Discussions</h1>
+        
+        <div class="page-header">
+            <a href="../pages/forum.html" class="back-link" title="Back to Discussions">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="back-icon">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </a>
+            <h1 class="page-title">Discussions</h1>
+        </div>
 
         <div class="content-grid">
+            
             <section class="create-topic-container">
                 <h2 class="section-title">Create new topic</h2>
 
                 <div class="topic-selector" id="topicSelector">
                     <label class="topic-option selected">
-                        <span class="radio-fake"></span> Question <input type="radio" name="topic_type" checked>
+                        <span class="radio-fake"></span> Question 
+                        <input type="radio" name="topic_type" checked>
                     </label>
                     <label class="topic-option">
-                        <span class="radio-fake"></span> Conversation <input type="radio" name="topic_type">
+                        <span class="radio-fake"></span> Conversation 
+                        <input type="radio" name="topic_type">
                     </label>
                     <label class="topic-option">
-                        <span class="radio-fake"></span> Idea <input type="radio" name="topic_type">
+                        <span class="radio-fake"></span> Idea 
+                        <input type="radio" name="topic_type">
                     </label>
                 </div>
 
@@ -78,12 +93,12 @@
                                     <div class="dropdown-option" data-cmd="formatBlock" data-val="PRE">Code Block</div>
                                 </div>
                             </div>
+                            
                             <span class="separator">|</span>
                             
                             <span class="toolbar-item bold" id="btnBold" title="Bold">B</span>
                             <span class="toolbar-item italic" id="btnItalic" title="Italic">I</span>
                             <span class="toolbar-item underline" id="btnUnderline" title="Underline">U</span>
-                            
                             <span class="toolbar-item color" id="btnColor" title="Text Color">A</span>
                             
                             <span class="separator">|</span>
@@ -144,6 +159,7 @@
                     <span class="tag">product feedback</span>
                 </div>
             </aside>
+
         </div>
     </main>
 
@@ -175,5 +191,6 @@
     </footer>
 
     <script src="../js/thread.js"></script>
+
 </body>
 </html>
