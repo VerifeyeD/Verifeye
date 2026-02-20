@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VerifEye | Articles</title>
+    
+    <link rel="stylesheet" href="../css/Article.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="../assets/images/logo.png" alt="VerifEye">
+                <h2><div class="logoname">VerifEye</div></h2> 
+            </div>
+            <ul>
+                <li><a href="../pages/homepage.html">Home</a></li>
+                <li><a href="../pages/article.html" class="active">Article</a></li>
+                <li><a href="../pages/glossary.html">Glossary</a></li>
+                <li><a href="../pages/selfassessment.html">Self-assessment</a></li>
+                <li><a href="../pages/forum.html">Discussions</a></li>
+            </ul>
+            <button class="btn-login">Login</button>
+            <script>
+                document.querySelector('.btn-login').addEventListener('click', function() {
+                    window.location.href = '../pages/login.html';
+                });
+            </script>
+        </nav>
+    </header>
+
+    <hr class="header-line">
+
+    <main>
+        <div class="articles-container">
+            <div class="articles-header">
+                <h1>Articles</h1>
+                <p class="subtitle">Educational articles that explain deepfakes, AI media, and how to spot misinformation</p>
+                
+                <div class="search-section">
+                    <div class="search-input-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" placeholder="Search articles...">
+                    </div>
+                    <button class="btn-search">Search</button>
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="filter-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                        <strong>Filter by category</strong>
+                    </div>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">ALL</button>
+                        <button class="filter-btn" data-filter="videos">VIDEOS</button>
+                        <button class="filter-btn" data-filter="images">IMAGES</button>
+                        <button class="filter-btn" data-filter="audio">AUDIO</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="article-grid">
+                
+                <div class="article-card" data-category="images">
+                    <div class="card-image">
+                        <img src="../assets/images/Placeholder1_article.png" alt="AI Generated Image Example" style="background-color: #2c3e50;">
+                    </div>
+                    <div class="card-content">
+                        <a href="#" class="category-pill">IMAGES</a>
+                        <h3>AI-Generated Images:<br>Detection Techniques</h3>
+                    </div>
+                </div>
+
+                <div class="article-card" data-category="videos">
+                    <div class="card-image video-card">
+                        <img src="../assets/images/placeholder_video.png" alt="Deepfake Video Example" style="background-color: #7f8c8d;">
+                        <div class="play-button">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <a href="#" class="category-pill">VIDEOS</a>
+                        <h3>How to Spot Deepfake Videos:<br>10 Tell-Tale Signs</h3>
+                    </div>
+                </div>
+
+                <div class="article-card" data-category="audio">
+                    <div class="card-image">
+                        <img src="../assets/images/placeholder_audio.png" alt="Audio Waveform" style="background-color: #bdc3c7;">
+                    </div>
+                    <div class="card-content">
+                        <a href="#" class="category-pill">AUDIOS</a>
+                        <h3>Voice cloning and hihi</h3>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col brand-col">
+                <h3>VerifEye</h3>
+                <p>Verify the truth. From AI insight to deception detection, we keep your eye on what’s real.</p>
+            </div>
+
+            <div class="footer-col links-col">
+                <h3>Resources</h3>
+                <div class="link-grid">
+                    <a href="#">Article</a>
+                    <a href="#">Image Deepfakes</a>
+                    <a href="#">Glossary</a>
+                    <a href="#">Audio Deepfakes</a>
+                    <a href="#">Self-Assessment</a>
+                    <a href="#">Video Deepfakes</a>
+                </div>
+                <p class="copyright">© VerifEye 2026. Fighting misinformation through education.</p>
+            </div>
+
+            <div class="footer-col about-col">
+                <h3>About</h3>
+                <p>Our mission is to promote digital literacy and help users identify AI manipulated media.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const articleCards = document.querySelectorAll('.article-card');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // 1. Remove active styling from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // 2. Add active styling to the clicked button
+                    button.classList.add('active');
+
+                    // 3. Find out which category we are filtering by
+                    const filterValue = button.getAttribute('data-filter');
+
+                    // 4. Loop through cards to show/hide them
+                    articleCards.forEach(card => {
+                        if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
+                            card.style.display = 'flex'; // Show matching cards
+                        } else {
+                            card.style.display = 'none'; // Hide non-matching cards
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
