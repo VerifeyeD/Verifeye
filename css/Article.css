@@ -1,0 +1,358 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Hahmlet', serif;
+}
+
+body {
+    color: #333; 
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
+}
+
+/* --- HEADER & NAVIGATION (100% Exact Homepage Alignments) --- */
+header {
+    width: 100%;
+    padding: 0 10%; 
+    background-color: #fff;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    height: 15px;
+}
+
+.logo img {
+    width: 60px;
+}
+
+.logoname {
+    font-size: 25px;
+    color: #333; 
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav ul li {
+    margin: 0 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333; 
+    transition: 0.3s;
+}
+
+nav ul li a.active, nav ul li a:hover {
+    color: #06629b;
+}
+
+.btn-login {
+    padding: 10px 30px;
+    background: #596272;
+    color: #ececec;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.btn-login:hover {
+    transform: scale(1.05);
+    transition: 0.5s;
+}
+
+.header-line {
+    border: none;
+    border-top: 2px solid #ddd;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* --- MAIN CONTENT: ARTICLES PAGE --- */
+main {
+    flex: 1;
+    padding: 40px 10%;
+    display: flex;
+    justify-content: center;
+}
+
+.articles-container {
+    width: 100%;
+    max-width: 1100px;
+}
+
+.articles-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.articles-header h1 {
+    font-size: 4.5rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 10px;
+}
+
+.articles-header .subtitle {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* Search Bar */
+.search-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: #555;
+}
+
+.search-input-wrapper input {
+    width: 100%;
+    padding: 12px 15px 12px 45px;
+    font-size: 1.1rem;
+    background-color: #E2E4E9;
+    border: 2px solid #b0b8c1;
+    border-radius: 25px;
+    outline: none;
+    font-family: 'Hahmlet', serif;
+}
+
+.btn-search {
+    padding: 12px 25px;
+    background-color: #4A5568;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-search:hover {
+    background-color: #2D3748;
+}
+
+/* Filter Section */
+.filter-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.filter-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    color: #000;
+}
+
+.filter-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.filter-btn {
+    padding: 8px 20px;
+    border: 1px solid #718096;
+    background-color: #fff;
+    color: #4A5568;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.filter-btn.active, .filter-btn:hover {
+    background-color: #4A5568;
+    color: #fff;
+}
+
+/* Article Grid */
+.article-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.article-card {
+    background-color: #DDE2E5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    cursor: pointer; /* Makes the whole card feel clickable */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover transition */
+}
+
+/* Card Hover Effect */
+.article-card:hover {
+    transform: translateY(-8px); /* Lifts the card up slightly */
+    box-shadow: 0 12px 20px rgba(0,0,0,0.15); /* Increases the shadow */
+}
+
+.card-image {
+    width: 100%;
+    height: 220px;
+    position: relative;
+    background-color: #bdc3c7; 
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Video Play Button Overlay */
+.video-card .play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background-color: #fff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease;
+}
+
+.article-card:hover .video-card .play-button {
+    transform: translate(-50%, -50%) scale(1.1); /* Slightly enlarges play button on card hover */
+}
+
+.video-card .play-button svg {
+    width: 25px;
+    height: 25px;
+    color: #333;
+    margin-left: 5px; 
+}
+
+.card-content {
+    padding: 20px;
+    flex: 1;
+}
+
+/* Updated Category Pill as a Clickable Link */
+.category-pill {
+    display: inline-block;
+    background-color: #596272;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+    text-decoration: none; /* Removes link underline */
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.category-pill:hover {
+    background-color: #2D3748; /* Darkens the pill on hover */
+    transform: scale(1.05); /* Very slight pop effect */
+}
+
+.card-content h3 {
+    font-size: 1.25rem;
+    color: #000;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+/* --- FOOTER --- */
+footer {
+    background-color: #EAF4FC; 
+    padding: 50px 50px 20px 50px;
+    margin-top: 50px; 
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 40px;
+}
+
+.footer-col {
+    flex: 1;
+}
+
+.footer-col h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #000;
+}
+
+.footer-col p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #444;
+}
+
+.link-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 10px 20px;
+    margin-bottom: 20px;
+}
+
+.link-grid a {
+    text-decoration: none;
+    color: #444;
+    font-size: 0.95rem;
+}
+
+.copyright {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 30px;
+}
