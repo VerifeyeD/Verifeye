@@ -12,13 +12,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-git
+    
     <header>
-        <div class="logo-container">
-            <img src="../assets/images/logo.png" alt="VerifEye Logo" class="logo">
-        </div>
-
         <nav>
+            <div class="logo">
+                <img src="../assets/images/logo.png" alt="VerifEye">
+                <h2><div class="logoname">VerifEye</div></h2> 
+            </div>
             <ul>
                 <li><a href="../pages/homepage.html">Home</a></li>
                 <li><a href="../pages/article.html">Article</a></li>
@@ -26,6 +26,12 @@ git
                 <li><a href="../pages/selfassessment.html">Self-assessment</a></li>
                 <li><a href="../pages/forum.html">Discussions</a></li>
             </ul>
+            <button class="btn-login">Login</button>
+            <script>
+                document.querySelector('.btn-login').addEventListener('click', function() {
+                    window.location.href = '../pages/login.html';
+                });
+            </script>
         </nav>
     </header>
 
@@ -64,7 +70,7 @@ git
                     <p>Lorem Ipsum</p>
                 </div>
             </div>
-            </div>
+        </div>
     </main>
 
     <footer>

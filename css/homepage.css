@@ -8,7 +8,7 @@
 .main {
     width: 100%;
     height: 100vh;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 100%, rgba(0, 0, 0, 0.5) 100%), url('../assets/images/bgbg.jpg');
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 100%, rgba(0, 0, 0, 0.5) 100%), url('../assets/images/bgbg.png');
     background-position: center;
     background-size: cover;
     color: #f3eff5;
