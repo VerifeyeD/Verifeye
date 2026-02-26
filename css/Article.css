@@ -71,6 +71,7 @@ nav ul li a.active, nav ul li a:hover {
 }
 
 .btn-login:hover {
+    background-color: #222b3e;
     transform: scale(1.05);
     transition: 0.5s;
 }
@@ -351,8 +352,10 @@ footer {
     font-size: 0.95rem;
 }
 
-.copyright {
+footer .copyright {
+    text-align: center;
     font-size: 0.75rem;
     color: #666;
-    margin-top: 30px;
+    margin-top: 35 px; /* spacing from footer content */
+    width: 100%;
 }

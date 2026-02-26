@@ -129,7 +129,8 @@
         }
 
         .btn:hover{
-            transform: scale(0.95);
+            background-color: #596272;
+            transform: scale(1.05);
             transition: 0.5s;
         }
 
@@ -199,4 +200,8 @@
             background: transparent;
             border: 2px solid #ececec;
             box-shadow: none;
+        }
+
+        .toggle-panel .btn:hover{
+            background-color: #596272;
         }

@@ -76,6 +76,7 @@ nav ul li a.active, nav ul li a:hover {
 }
 
 .btn-login:hover {
+    background-color: #222b3e;
     transform: scale(1.05);
     transition: 0.5s;
 }
@@ -141,7 +142,7 @@ main {
 
 .post-thread-btn {
     float: right;
-    background-color: #0a2540; 
+    background-color: #596272; 
     color: white;
     padding: 10px 25px;
     border-radius: 25px;
@@ -155,6 +156,7 @@ main {
 .post-thread-btn:hover {
     background-color: #163c63;
     transform: scale(1.05);
+    transition: 0.5s;
 }
 
 /* Thread List Box */
