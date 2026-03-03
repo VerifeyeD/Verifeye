@@ -104,45 +104,71 @@ main {
     font-weight: 700;
     color: #000;
     margin-bottom: 5px;
+    text-align: center; /* Added to center the text */
 }
 
 .discussions-subtitle {
     font-size: 14px;
     color: #666;
     margin-bottom: 20px;
+    text-align: center; /* Added to center the text */
 }
 
-/* --- SEARCH BAR (NOW PROPERLY INSIDE CONTAINER) --- */
-.search-container {
-    position: relative;
-    width: 100%;
+/* --- SEARCH BAR & POST THREAD SECTION --- */
+.search-section {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* <--- Add this line to center everything */
+    gap: 10px;
     margin-bottom: 25px;
 }
 
-.search-bar {
+.search-input-wrapper {
+    position: relative;
+    flex: 1; /* This tells the search bar to expand and fill the empty space */
     width: 100%;
-    padding: 12px 20px 12px 45px;
-    border: 2px solid #b0b8c1; 
-    border-radius: 25px;
-    background-color: #e2e4e9; 
-    font-size: 1.1rem;
-    color: #555;
-    outline: none;
+    max-width: 500px; /* Gives it a much wider, more natural look */
 }
-
-/* .search-bar::placeholder {
-    color: #777;
-} */
 
 .search-icon {
     position: absolute;
-    left: 18px;
+    left: 15px;
     top: 50%;
     transform: translateY(-50%);
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     color: #555;
     pointer-events: none;
+}
+
+.search-input-wrapper input {
+    width: 100%;
+    padding: 12px 15px 12px 45px;
+    font-size: 1.1rem;
+    background-color: #E2E4E9;
+    border: 2px solid #b0b8c1;
+    border-radius: 25px;
+    outline: none;
+    font-family: 'Hahmlet', serif;
+}
+
+.post-thread-btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #4A5568;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.post-thread-btn:hover {
+    background-color: #2D3748;
+    transform: scale(1.05);
 }
 
 /* --- THREAD LIST --- */
@@ -225,23 +251,6 @@ main {
     color: #06629b;
 }
 
-.post-thread-btn {
-    float: right;
-    background-color: #596272; 
-    color: white;
-    padding: 10px 25px;
-    border-radius: 25px;
-    font-size: 16px;
-    font-weight: 500;
-    margin-top: 30px;
-    transition: 0.3s;
-}
-
-.post-thread-btn:hover {
-    background-color: #163c63;
-    transform: scale(1.05);
-}
-
 /* --- FOOTER --- */
 footer {
     background-color: #EAF4FC; 
@@ -294,6 +303,6 @@ footer .copyright {
     text-align: center;
     font-size: 0.75rem;
     color: #666;
-    margin-top: 35px; /* fixed spacing */
+    margin-top: 35px;
     width: 100%;
 }
