@@ -1,0 +1,106 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "hahmlet", sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    /* Keeping your specific background */
+    background: linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(../assets/images/blurbg.png);
+    background-size: cover;
+    background-position: center;
+}
+
+.container {
+    position: relative;
+    width: 450px; /* Reduced width for a single form */
+    min-height: 500px;
+    background: #c7c8c8;
+    border-radius: 30px;
+    box-shadow: 0 0 30px rgba(0,0,0,.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.form-box {
+    width: 100%;
+    color: #0e0d0e;
+    text-align: center;
+}
+
+form {
+    width: 100%;
+}
+
+.container h1 {
+    font-size: 27px;
+    margin-bottom: 20px;
+}
+
+.container p {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.input-box {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 13px 20px;
+    background: #ececec;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #0e0d0e;
+}
+
+.input-box input::placeholder {
+    color: #151515;
+    opacity: 50%;
+}
+
+.btn {
+    width: 100%; /* Full width button for this layout */
+    height: 48px;
+    background: #222b3e;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #ececec;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background-color: #596272;
+    transform: scale(1.02);
+}
+
+.back-link {
+    margin-top: 25px;
+}
+
+.back-link a {
+    font-size: 14px;
+    color: #151515;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.back-link a:hover {
+    text-decoration: underline;
+}
