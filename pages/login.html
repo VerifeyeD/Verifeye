@@ -17,15 +17,22 @@
     <div class="container">
         <div class="form-box login">
             <form action="">
+                <div class="role-selection">
+                    <input type="radio" name="login-role" id="user-login" value="user" checked>
+                    <label for="user-login">User</label>
+                    <input type="radio" name="login-role" id="admin-login" value="admin">
+                    <label for="admin-login">Admin</label>
+                </div>
+
                 <h1>Login & Unmask The Truth</h1>
                 <div class="input-box">
-                    <input type="text" placeholder="Username"  required>
+                    <input type="text" placeholder="Username" required>
                     <i class='bx bxs-user'></i>
                 </div>
 
                 <div class="input-box">
-                    <input type="password" placeholder="Password"  required>
-                    <i class='bx bxs-lock-alt' ></i>
+                    <input type="password" placeholder="Password" required>
+                    <i class='bx bxs-lock-alt'></i>
                 </div>
 
                 <div class="forgot-link">
@@ -40,17 +47,17 @@
             <form action="">
                 <h1>Register & Start Verifying</h1>
                 <div class="input-box">
-                    <input type="text" placeholder="Username"  required>
+                    <input type="text" placeholder="Username" required>
                     <i class='bx bxs-user'></i>
                 </div>
 
                 <div class="input-box">
-                    <input type="email" placeholder="Email"  required>
+                    <input type="email" placeholder="Email" required>
                     <i class='bx bxs-envelope'></i>
                 </div>
 
                 <div class="input-box">
-                    <input type="password" placeholder="Password"  required>
+                    <input type="password" placeholder="Password" required>
                     <i class='bx bxs-lock-alt'></i>
                 </div>
 
@@ -70,12 +77,9 @@
                 <p>Already have an account?</p>
                 <button class="btn login-btn">Login</button>
             </div>
-
         </div>
     </div>
 
     <script src="../js/login.js"></script>
-        
-
 </body>
 </html>
