@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VerifEye | Login</title>
-    <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="/css/login.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,10 +32,18 @@
                     <a href="#">Forgot password?</a>
                 </div>
 
+                <div class="role-selector">
+                    <input type="radio" id="role-user" name="loginRole" value="user" checked>
+                    <label for="role-user" class="role-btn">User</label>
+                    
+                    <input type="radio" id="role-admin" name="loginRole" value="admin">
+                    <label for="role-admin" class="role-btn">Admin</label>
+                </div>
+
                 <button type="submit" class="btn">Login</button>
             </form>
         </div>
-    
+        
         <div class="form-box register">
             <form action="">
                 <h1>Register & Start Verifying</h1>
@@ -54,7 +62,7 @@
                     <i class='bx bxs-lock-alt'></i>
                 </div>
 
-                <button type="submit" class="btn">Register</button>
+                <button type="submit" class="btn" style="margin-top: 15px;">Register</button>
             </form>
         </div>
     
@@ -74,8 +82,16 @@
         </div>
     </div>
 
-    <script src="../js/login.js"></script>
-        
+    <div id="custom-alert-overlay" class="custom-alert-overlay">
+        <div class="custom-alert-box" id="custom-alert-box">
+            <div class="custom-alert-icon" id="custom-alert-icon"></div>
+            <h2 class="custom-alert-title" id="custom-alert-title"></h2>
+            <p class="custom-alert-message" id="custom-alert-message"></p>
+            <button class="custom-alert-btn" onclick="closeCustomAlert()">OK</button>
+        </div>
+    </div>
 
+    <script src="/js/login.js"></script>
+        
 </body>
 </html>

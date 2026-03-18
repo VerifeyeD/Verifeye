@@ -10,15 +10,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
 </head>
 <body>
 
     <header>
         <nav>
-            <div class="logo">
+            <a href="../pages/homepage.html" class="logo" style="text-decoration: none; color: inherit; cursor: pointer;">
                 <img src="../assets/images/logo.png" alt="VerifEye">
                 <h2><div class="logoname">VerifEye</div></h2> 
-            </div>
+            </a>
             <ul>
                 <li><a href="../pages/homepage.html">Home</a></li>
                 <li><a href="../pages/article.html">Article</a></li>
@@ -26,12 +28,8 @@
                 <li><a href="../pages/selfassessment.html">Self-assessment</a></li>
                 <li><a href="../pages/Discussions.html" class="active">Discussions</a></li>
             </ul>
-            <button class="btn-login">Login</button>
-            <script>
-                document.querySelector('.btn-login').addEventListener('click', function() {
-                    window.location.href = '../pages/login.html';
-                });
-            </script>
+            
+            <div id="auth-status"></div>
         </nav>
     </header>
 
@@ -46,30 +44,69 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                        <input type="text" placeholder="Search discussions...">
+                        <input type="text" id="live-search-input" placeholder="Search discussions by keyword, tag, or username...">
                     </div>
-                    <a href="../pages/thread.html" class="post-thread-btn">Post thread</a>
+                    <a href="../pages/thread.html" class="post-thread-btn" id="post-thread-link">Post thread</a>
                 </div>
-                
             </div>
 
-            <div class="thread-list-container">
-                <div class="thread-count">550 Topics</div>
-                
-                <div class="thread-item">
-                    <div class="thread-meta">
-                        <div class="avatar-circle"></div>
-                        <span class="username">noturtypicalboy0728</span>
-                        <span class="date">February 18, 2026</span>
-                        <span class="dot">•</span>
-                        <span class="tag">Question</span>
-                    </div>
-                    <a href="#" class="thread-title">How do I differentiate deepfake from real one?</a>
-                </div>
+            <div class="thread-list-container" id="thread-list-container">
+                <div class="thread-count">Loading topics...</div>
             </div>
 
         </div>
     </main>
+
+    <div id="custom-confirm-modal" class="confirm-modal">
+        <div class="confirm-content">
+            <h3 id="confirm-title" style="color: #0F3047; margin-bottom: 10px; font-size: 22px;">Confirm Action</h3>
+            <p id="confirm-message" style="color: #666; font-size: 15px; margin-bottom: 25px;">Are you sure?</p>
+            <div class="confirm-actions">
+                <button id="btn-cancel-confirm" class="btn-confirm-cancel">Cancel</button>
+                <button id="btn-do-confirm" class="btn-confirm-action">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="report-modal" class="modal">
+        <div class="modal-content" style="width: 450px;">
+            <span class="close-btn" onclick="closeReportModal()">&times;</span>
+            <h2 style="color: #0F3047;">Report Content</h2>
+            <form id="report-form">
+                <input type="hidden" id="report-type">
+                <input type="hidden" id="report-thread-id">
+                <input type="hidden" id="report-comment-id">
+                <input type="hidden" id="report-reply-id">
+                <input type="hidden" id="report-target-user">
+
+                <div class="form-group">
+                    <label>Reason for reporting:</label>
+                    <select id="report-reason" class="input-field" onchange="toggleOtherReason()" required style="cursor: pointer;">
+                        <option value="" disabled selected>Select a reason...</option>
+                        <option value="Harassment or Hate Speech">Harassment or Hate Speech</option>
+                        <option value="Spam or Scams">Spam or Scams</option>
+                        <option value="Inappropriate Content">Inappropriate Content</option>
+                        <option value="Misinformation">Misinformation</option>
+                        <option value="Other">Other...</option>
+                    </select>
+                </div>
+                <div class="form-group" id="other-reason-group" style="display: none;">
+                    <label>Please specify:</label>
+                    <textarea id="report-details" class="input-field" rows="3" placeholder="Provide more details about your report..." style="resize: vertical;"></textarea>
+                </div>
+                <button type="submit" class="btn-save" style="background: #e74c3c;">Submit Report</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="custom-alert-overlay" class="custom-alert-overlay">
+        <div class="custom-alert-box" id="custom-alert-box">
+            <div class="custom-alert-icon" id="custom-alert-icon"></div>
+            <h2 class="custom-alert-title" id="custom-alert-title"></h2>
+            <p class="custom-alert-message" id="custom-alert-message"></p>
+            <button class="custom-alert-btn" onclick="closeCustomAlert()">OK</button>
+        </div>
+    </div>
 
     <footer>
         <div class="footer-content">
@@ -77,20 +114,16 @@
                 <h3>VerifEye</h3>
                 <p>Verify the truth. From AI insight to deception detection, we keep your eye on what’s real.</p>
             </div>
-
             <div class="footer-col links-col">
                 <h3>Resources</h3>
                 <div class="link-grid">
                     <a href="../pages/Article.html">Article</a>
-                    <a href="#">Image Deepfakes</a>
                     <a href="../pages/glossary.html">Glossary</a>
-                    <a href="#">Audio Deepfakes</a>
                     <a href="../pages/selfassessment.html">Self-Assessment</a>
-                    <a href="#">Video Deepfakes</a>
+                    <a href="../pages/Discussions.html">Discussions</a>
                 </div>
                 <p class="copyright">© VerifEye 2026. Fighting misinformation through education.</p>
             </div>
-
             <div class="footer-col about-col">
                 <h3>About</h3>
                 <p>Our mission is to promote digital literacy and help users identify AI manipulated media.</p>
@@ -98,5 +131,232 @@
         </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="../js/profile.js"></script>
+
+    <script>
+        // Custom Alert Logic
+        window.showCustomAlert = function(title, message, type, onSuccessCallback = null) {
+            const overlay = document.getElementById('custom-alert-overlay');
+            const alertBox = document.getElementById('custom-alert-box');
+            const icon = document.getElementById('custom-alert-icon');
+            document.getElementById('custom-alert-title').innerText = title;
+            document.getElementById('custom-alert-message').innerText = message;
+            if (type === 'error') {
+                alertBox.className = 'custom-alert-box custom-alert-error';
+                icon.innerHTML = "<i class='bx bx-error-circle'></i>";
+            } else {
+                alertBox.className = 'custom-alert-box custom-alert-success';
+                icon.innerHTML = "<i class='bx bx-check-circle'></i>";
+            }
+            overlay.classList.add('show');
+            window.currentAlertCallback = onSuccessCallback;
+        };
+
+        window.closeCustomAlert = function() {
+            document.getElementById('custom-alert-overlay').classList.remove('show');
+            if (typeof window.currentAlertCallback === 'function') {
+                window.currentAlertCallback();
+                window.currentAlertCallback = null;
+            }
+        };
+
+        // Custom Confirm Logic
+        window.customConfirm = function(title, message, confirmBtnText = "Yes", confirmBtnColor = "#e74c3c") {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('custom-confirm-modal');
+                document.getElementById('confirm-title').innerText = title;
+                document.getElementById('confirm-message').innerText = message;
+                
+                const btnDo = document.getElementById('btn-do-confirm');
+                btnDo.innerText = confirmBtnText;
+                btnDo.style.background = confirmBtnColor;
+
+                modal.classList.add('show');
+
+                const handleConfirm = () => { cleanup(); resolve(true); };
+                const handleCancel = () => { cleanup(); resolve(false); };
+
+                function cleanup() {
+                    modal.classList.remove('show');
+                    btnDo.removeEventListener('click', handleConfirm);
+                    document.getElementById('btn-cancel-confirm').removeEventListener('click', handleCancel);
+                }
+
+                btnDo.addEventListener('click', handleConfirm);
+                document.getElementById('btn-cancel-confirm').addEventListener('click', handleCancel);
+            });
+        };
+
+        // Report Modal Logic
+        function openReportModal(type, threadId, targetUser, commentId = null, replyId = null) {
+            const loggedInUser = localStorage.getItem('verifeye_user');
+            if (!loggedInUser) { showCustomAlert("Access Denied", "You must be logged in to report content.", "error"); return; }
+            
+            document.getElementById('report-type').value = type;
+            document.getElementById('report-thread-id').value = threadId;
+            document.getElementById('report-comment-id').value = commentId;
+            document.getElementById('report-reply-id').value = replyId;
+            document.getElementById('report-target-user').value = targetUser;
+            
+            document.getElementById('report-reason').value = "";
+            document.getElementById('report-details').value = "";
+            document.getElementById('other-reason-group').style.display = 'none';
+
+            const modal = document.getElementById('report-modal');
+            modal.style.display = 'flex';
+            modal.classList.add('show');
+        }
+
+        function closeReportModal() {
+            const modal = document.getElementById('report-modal');
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+        }
+
+        function toggleOtherReason() {
+            const reason = document.getElementById('report-reason').value;
+            document.getElementById('other-reason-group').style.display = reason === 'Other' ? 'block' : 'none';
+        }
+
+        document.getElementById('report-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerText = "Submitting...";
+            btn.disabled = true;
+
+            const payload = {
+                reporter: localStorage.getItem('verifeye_user'),
+                reportedUser: document.getElementById('report-target-user').value,
+                type: document.getElementById('report-type').value,
+                threadId: document.getElementById('report-thread-id').value,
+                commentId: document.getElementById('report-comment-id').value || null,
+                replyId: document.getElementById('report-reply-id').value || null,
+                reason: document.getElementById('report-reason').value,
+                details: document.getElementById('report-details').value
+            };
+
+            try {
+                const res = await fetch('http://localhost:3000/api/reports', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) { 
+                    closeReportModal(); 
+                    showCustomAlert("Success", "Report submitted successfully. Admins will review it.", "success");
+                } 
+                else { showCustomAlert("Error", "Failed to submit report.", "error"); }
+            } catch (err) { showCustomAlert("Error", "Server error.", "error"); } 
+            finally { btn.innerText = "Submit Report"; btn.disabled = false; }
+        });
+
+        // Main Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const loggedInUser = localStorage.getItem('verifeye_user');
+            const userRole = localStorage.getItem('verifeye_role');
+            let allThreads = [];
+
+            const postThreadBtn = document.getElementById('post-thread-link');
+            if (postThreadBtn) {
+                postThreadBtn.addEventListener('click', (e) => {
+                    if (!loggedInUser) {
+                        e.preventDefault(); 
+                        showCustomAlert("Login Required", "You must be logged in to post a new thread!", "error", () => {
+                            window.location.href = '../pages/login.html';
+                        });
+                    }
+                });
+            }
+
+            const threadListContainer = document.getElementById('thread-list-container');
+
+            window.deleteThreadGlobal = async function(id) {
+                const confirmed = await window.customConfirm("Delete Thread", "As an admin, are you sure you want to permanently delete this thread?", "Delete", "#e74c3c");
+                if(!confirmed) return;
+                
+                try {
+                    await fetch(`http://localhost:3000/api/discussions/${id}`, { method: 'DELETE' });
+                    loadThreads();
+                    showCustomAlert("Success", "Thread permanently deleted.", "success");
+                } catch(e) { showCustomAlert("Error", "Error deleting thread.", "error"); }
+            }
+
+            function renderThreads(threadArray) {
+                threadListContainer.innerHTML = `<div class="thread-count">${threadArray.length} Topics Found</div>`;
+                
+                if (threadArray.length === 0) {
+                    threadListContainer.innerHTML += `<div style="text-align:center; padding: 40px; color: #888;">No discussions matched your search.</div>`;
+                    return;
+                }
+
+                threadArray.forEach(thread => {
+                    const dateObj = new Date(thread.createdAt);
+                    const dateStr = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                    const tag = thread.tag || "Discussion"; 
+                    
+                    const initial = thread.author ? thread.author.charAt(0).toUpperCase() : '?';
+                    const avatarHtml = thread.authorPfp 
+                        ? `<img src="${thread.authorPfp}" style="width:24px; height:24px; border-radius:50%; object-fit:cover; margin-right:8px;">`
+                        : `<div style="width:24px; height:24px; border-radius:50%; background:#596272; color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; margin-right:8px;">${initial}</div>`;
+
+                    let adminDelete = userRole === 'admin' ? `<span style="color:#e74c3c; cursor:pointer; font-weight:bold; font-size:12px; margin-left:15px;" onclick="deleteThreadGlobal('${thread._id}')"><i class='bx bxs-trash'></i> Delete</span>` : '';
+                    let reportBtn = loggedInUser && loggedInUser !== thread.author ? `<span style="color:#e74c3c; cursor:pointer; font-weight:bold; font-size:12px; margin-left:auto;" onclick="openReportModal('thread', '${thread._id}', '${thread.author}')"><i class='bx bxs-flag-alt'></i> Report</span>` : '';
+
+                    const threadHTML = `
+                        <div class="thread-item">
+                            <div class="thread-meta" style="display:flex; align-items:center;">
+                                <a href="../pages/user-profile.html?user=${thread.author}" class="user-hover-link" data-username="${thread.author}" style="display:flex; align-items:center;">
+                                    ${avatarHtml}
+                                    <span class="username">${thread.author}</span>
+                                </a>
+                                <span class="date" style="margin-left: 5px;">${dateStr}</span>
+                                <span class="dot">•</span>
+                                <span class="tag">${tag}</span>
+                                ${reportBtn}
+                                ${adminDelete}
+                            </div>
+                            <a href="../pages/view-thread.html?id=${thread._id}" class="thread-title">${thread.title}</a>
+                        </div>
+                    `;
+                    
+                    threadListContainer.insertAdjacentHTML('beforeend', threadHTML);
+                });
+            }
+
+            async function loadThreads() {
+                try {
+                    const response = await fetch('http://localhost:3000/api/discussions');
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const data = await response.json();
+                    allThreads = data.topics; 
+                    renderThreads(allThreads); 
+                } catch (error) {
+                    console.error('Error fetching threads:', error);
+                    threadListContainer.innerHTML = `<div class="thread-count" style="color:red;">Error loading topics. Please make sure your server is running!</div>`;
+                }
+            }
+
+            const searchInput = document.getElementById('live-search-input');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                if (searchTerm === "") {
+                    renderThreads(allThreads);
+                    return;
+                }
+                const filteredThreads = allThreads.filter(thread => {
+                    const titleMatch = (thread.title || "").toLowerCase().includes(searchTerm);
+                    const authorMatch = (thread.author || "").toLowerCase().includes(searchTerm);
+                    const typeMatch = (thread.tag || "").toLowerCase().includes(searchTerm);
+                    const contentMatch = (thread.content || "").toLowerCase().includes(searchTerm);
+                    const tagsMatch = (thread.tags || []).some(t => t.toLowerCase().includes(searchTerm));
+                    return titleMatch || authorMatch || typeMatch || contentMatch || tagsMatch;
+                });
+                renderThreads(filteredThreads);
+            });
+
+            loadThreads();
+        });
+    </script>
 </body>
 </html>

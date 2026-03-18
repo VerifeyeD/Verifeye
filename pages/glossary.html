@@ -5,20 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VerifEye | Glossary</title>
     
-    <link rel="stylesheet" href="..\css\glossary.css">
-
+    <link rel="stylesheet" href="../css/glossary.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
 </head>
 <body>
     
     <header>
         <nav>
-            <div class="logo">
+            <a href="../pages/homepage.html" class="logo" style="text-decoration: none; color: inherit; cursor: pointer;">
                 <img src="../assets/images/logo.png" alt="VerifEye">
                 <h2><div class="logoname">VerifEye</div></h2> 
-            </div>
+            </a>
             <ul>
                 <li><a href="../pages/homepage.html">Home</a></li>
                 <li><a href="../pages/article.html">Article</a></li>
@@ -26,12 +27,8 @@
                 <li><a href="../pages/selfassessment.html">Self-assessment</a></li>
                 <li><a href="../pages/Discussions.html">Discussions</a></li>
             </ul>
-            <button class="btn-login">Login</button>
-            <script>
-                document.querySelector('.btn-login').addEventListener('click', function() {
-                    window.location.href = '../pages/login.html';
-                });
-            </script>
+            
+            <div id="auth-status"></div>
         </nav>
     </header>
 
@@ -40,67 +37,87 @@
             <h1>Glossary</h1>
             <p class="subtitle">Comprehensive dictionary of deepfake and AI-related terms.</p>
             
-            <div class="search-container">
-                <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input type="text" placeholder="Search terminologies...">
-            </div>
-
-            <div class="glossary-list">
-                <div class="glossary-item">
-                    <h3>Algorithm</h3>
-                    <p>Lorem Ipsum</p>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px; max-width: 600px; margin: 0 auto;">
+                <div class="search-container" style="flex: 1; margin: 0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input type="text" id="glossary-search" placeholder="Search terminologies...">
                 </div>
                 
-                <div class="glossary-item">
-                    <h3>Batch</h3>
-                    <p>Lorem Ipsum</p>
-                </div>
+                <button id="add-term-btn" class="btn-add-term" style="display: none;" onclick="openGlossaryModal()">+ Add Term</button>
+            </div>
 
-                <div class="glossary-item">
-                    <h3>Classification</h3>
-                    <p>Lorem Ipsum</p>
-                </div>
-
-                <div class="glossary-item">
-                    <h3>Deepfake</h3>
-                    <p>Lorem Ipsum</p>
-                </div>
+            <div class="glossary-list" id="glossary-list">
+                <div style="text-align: center; color: #888; padding: 40px;">Loading glossary terms...</div>
             </div>
         </div>
     </main>
 
+    <div id="glossary-form-modal" class="modal">
+        <div class="modal-content" style="width: 450px;">
+            <span class="close-btn" onclick="closeGlossaryModal()">&times;</span>
+            <h2 id="glossary-modal-title" style="color: #0F3047;">Add Glossary Term</h2>
+            <form id="glossary-form">
+                <input type="hidden" id="glossary-id">
+                <div class="form-group">
+                    <label>Term:</label>
+                    <input type="text" id="glossary-term-input" class="input-field" required placeholder="e.g. Algorithm">
+                </div>
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea id="glossary-desc-input" class="input-field" rows="4" required placeholder="Enter definition here..." style="resize: vertical;"></textarea>
+                </div>
+                <button type="submit" id="glossary-submit-btn" class="btn-save">Save Term</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="custom-confirm-modal" class="confirm-modal">
+        <div class="confirm-content">
+            <h3 id="confirm-title" style="color: #0F3047; margin-bottom: 10px; font-size: 22px;">Confirm Action</h3>
+            <p id="confirm-message" style="color: #666; font-size: 15px; margin-bottom: 25px;">Are you sure?</p>
+            <div class="confirm-actions">
+                <button id="btn-cancel-confirm" class="btn-confirm-cancel">Cancel</button>
+                <button id="btn-do-confirm" class="btn-confirm-action">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-alert-overlay" class="custom-alert-overlay">
+        <div class="custom-alert-box" id="custom-alert-box">
+            <div class="custom-alert-icon" id="custom-alert-icon"></div>
+            <h2 class="custom-alert-title" id="custom-alert-title"></h2>
+            <p class="custom-alert-message" id="custom-alert-message"></p>
+            <button class="custom-alert-btn" onclick="closeCustomAlert()">OK</button>
+        </div>
+    </div>
+
     <footer>
         <div class="footer-content">
-            
             <div class="footer-col brand-col">
                 <h3>VerifEye</h3>
                 <p>Verify the truth. From AI insight to deception detection, we keep your eye on what’s real.</p>
             </div>
-
             <div class="footer-col links-col">
                 <h3>Resources</h3>
                 <div class="link-grid">
                     <a href="../pages/article.html">Article</a>
-                    <a href="#">Image Deepfakes</a>
                     <a href="../pages/glossary.html">Glossary</a>
-                    <a href="#">Audio Deepfakes</a>
                     <a href="../pages/selfassessment.html">Self-Assessment</a>
-                    <a href="#">Video Deepfakes</a>
+                    <a href="../pages/Discussions.html">Discussions</a>
                 </div>
-                
             </div>
-3
             <div class="footer-col about-col">
                 <h3>About</h3>
                 <p>Our mission is to promote digital literacy and help users identify AI manipulated media.</p>
             </div>
-
         </div>
-
         <p class="copyright">© VerifEye 2026. Fighting misinformation through education.</p>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="../js/profile.js"></script>
+    <script src="../js/glossary.js"></script>
 </body>
 </html>

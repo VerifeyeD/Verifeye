@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VerifEye | Upload Article</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/thread.css"> 
+    <link rel="stylesheet" href="../css/upload-article.css">
+</head>
+<body>
+
+    <input type="file" id="thumbnailUploadInput" accept="image/*" style="display: none;">
+
+    <header>
+        <nav>
+            <a href="../pages/homepage.html" class="logo" style="text-decoration: none; color: inherit; cursor: pointer;">
+                <img src="../assets/images/logo.png" alt="VerifEye">
+                <h2><div class="logoname">VerifEye</div></h2> 
+            </a>
+            <ul>
+                <li><a href="../pages/homepage.html">Home</a></li>
+                <li><a href="../pages/article.html" class="active">Article</a></li>
+                <li><a href="../pages/glossary.html">Glossary</a></li>
+                <li><a href="../pages/selfassessment.html">Self-assessment</a></li>
+                <li><a href="../pages/Discussions.html">Discussions</a></li>
+            </ul>
+            <div id="auth-status"></div>
+        </nav>
+    </header>
+
+    <main class="container main-layout">
+        <div class="page-header">
+            <a href="../pages/article.html" class="back-link" title="Back to Articles">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="back-icon">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Back to Articles</span>
+            </a>
+        </div>
+
+        <section class="create-topic-container">
+            <h2 class="section-title">Submit an Article</h2>
+            <p style="color: #666; margin-bottom: 20px; font-size: 14px;">Share a link to an educational article. User submissions will be reviewed before publishing.</p>
+
+            <div class="form-group">
+                <label for="title" class="input-label">Article Title:</label>
+                <input type="text" id="title" class="input-field title-input" placeholder="Enter a descriptive title...">
+            </div>
+
+            <div class="topic-selector" id="categorySelector">
+                <label class="topic-option selected">
+                    <span class="radio-fake"></span> Images 
+                    <input type="radio" name="article_category" value="images" checked>
+                </label>
+                <label class="topic-option">
+                    <span class="radio-fake"></span> Videos 
+                    <input type="radio" name="article_category" value="videos">
+                </label>
+                <label class="topic-option">
+                    <span class="radio-fake"></span> Audio 
+                    <input type="radio" name="article_category" value="audio">
+                </label>
+            </div>
+
+            <div class="form-group thumbnail-group">
+                <label class="input-label">Cover Thumbnail</label>
+                <div class="thumbnail-preview-box" id="thumbnail-preview-box">
+                    <span style="color: #888;">Click to upload a cover image</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="article-link" class="input-label">Source Link (URL):</label>
+                <input type="url" id="article-link" class="input-field" placeholder="https://example.com/article" required>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-post" id="submit-article-btn">Submit Article</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="custom-alert-overlay" class="custom-alert-overlay">
+        <div class="custom-alert-box" id="custom-alert-box">
+            <div class="custom-alert-icon" id="custom-alert-icon"></div>
+            <h2 class="custom-alert-title" id="custom-alert-title"></h2>
+            <p class="custom-alert-message" id="custom-alert-message"></p>
+            <button class="custom-alert-btn" onclick="closeCustomAlert()">OK</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="../js/profile.js"></script>
+    <script src="../js/upload-article.js"></script>
+</body>
+</html>

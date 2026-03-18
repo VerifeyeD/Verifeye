@@ -10,15 +10,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
 </head>
 <body>
 
     <header>
         <nav>
-            <div class="logo">
+            <a href="../pages/homepage.html" class="logo" style="text-decoration: none; color: inherit; cursor: pointer;">
                 <img src="../assets/images/logo.png" alt="VerifEye">
                 <h2><div class="logoname">VerifEye</div></h2> 
-            </div>
+            </a>
             <ul>
                 <li><a href="../pages/homepage.html">Home</a></li>
                 <li><a href="../pages/article.html" class="active">Article</a></li>
@@ -26,12 +28,8 @@
                 <li><a href="../pages/selfassessment.html">Self-assessment</a></li>
                 <li><a href="../pages/Discussions.html">Discussions</a></li>
             </ul>
-            <button class="btn-login">Login</button>
-            <script>
-                document.querySelector('.btn-login').addEventListener('click', function() {
-                    window.location.href = '../pages/login.html';
-                });
-            </script>
+            
+            <div id="auth-status"></div>
         </nav>
     </header>
 
@@ -46,9 +44,10 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                        <input type="text" placeholder="Search articles...">
+                        <input type="text" placeholder="Search articles..." id="article-search">
                     </div>
-                    <button class="btn-search">Search</button>
+                    <button class="btn-search" id="btn-search">Search</button>
+                    <a href="../pages/upload-article.html" class="post-thread-btn" id="upload-article-btn" style="margin-left: 15px; background-color: #06629b; text-decoration: none; padding: 12px 25px; border-radius: 25px; color: white; font-weight: 600;">Upload Article</a>
                 </div>
 
                 <div class="filter-section">
@@ -67,41 +66,8 @@
                 </div>
             </div>
 
-            <div class="article-grid">
-                
-                <div class="article-card" data-category="images">
-                    <div class="card-image">
-                        <img src="../assets/images/Placeholder1_article.png" alt="AI Generated Image Example" style="background-color: #2c3e50;">
-                    </div>
-                    <div class="card-content">
-                        <a href="#" class="category-pill">IMAGES</a>
-                        <h3>AI-Generated Images:<br>Detection Techniques</h3>
-                    </div>
-                </div>
-
-                <div class="article-card" data-category="videos">
-                    <div class="card-image video-card">
-                        <img src="../assets/images/vidplaceholder.png" alt="Deepfake Video Example" style="background-color: #7f8c8d;">
-                        <div class="play-button">
-                            <svg viewBox="0 0 24 25" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                        </div>
-                    </div>
-                    <div class="card-content">
-                        <a href="#" class="category-pill">VIDEOS</a>
-                        <h3>How to Spot Deepfake Videos:<br>10 Tell-Tale Signs</h3>
-                    </div>
-                </div>
-
-                <div class="article-card" data-category="audio">
-                    <div class="card-image">
-                        <img src="../assets/images/Audio_placeholder.png" alt="Audio Waveform" style="background-color: #bdc3c7;">
-                    </div>
-                    <div class="card-content">
-                        <a href="#" class="category-pill">AUDIOS</a>
-                        <h3>Voice cloning and hihi</h3>
-                    </div>
-                </div>
-
+            <div class="article-grid" id="article-grid">
+                <div style="grid-column: 1/-1; text-align: center; color: #888; padding: 40px;">Loading articles...</div>
             </div>
         </div>
     </main>
@@ -133,33 +99,7 @@
         </div>
     </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            const articleCards = document.querySelectorAll('.article-card');
-
-            filterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // 1. Remove active styling from all buttons
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    
-                    // 2. Add active styling to the clicked button
-                    button.classList.add('active');
-
-                    // 3. Find out which category we are filtering by
-                    const filterValue = button.getAttribute('data-filter');
-
-                    // 4. Loop through cards to show/hide them
-                    articleCards.forEach(card => {
-                        if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
-                            card.style.display = 'flex'; // Show matching cards
-                        } else {
-                            card.style.display = 'none'; // Hide non-matching cards
-                        }
-                    });
-                });
-            });
-        });
-    </script>
-</body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="../js/profile.js"></script>
+    <script src="../js/article-list.js"></script> </body>
 </html>

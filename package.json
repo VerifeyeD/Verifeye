@@ -1,0 +1,31 @@
+{
+  "name": "verifeye",
+  "version": "1.0.0",
+  "description": "Verify the truth. From AI insight to deception detection, we keep your eye on what’s real. \r <p align=\"center\">\r   <img src=\"assets/images/logo.png\" alt=\"Verifeye Logo\" width=\"800\">\r </p>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VerifeyeD/Verifeye.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VerifeyeD/Verifeye/issues"
+  },
+  "homepage": "https://github.com/VerifeyeD/Verifeye#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mongoose": "^9.2.3",
+    "multer": "^2.1.1",
+    "nodemailer": "^8.0.1",
+    "resend": "^6.9.3"
+  }
+}

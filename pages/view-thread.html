@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VerifEye | View Thread</title>
+    <link rel="stylesheet" href="../css/view-thread.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="../pages/homepage.html" class="logo" style="text-decoration: none; color: inherit; cursor: pointer;">
+                <img src="../assets/images/logo.png" alt="VerifEye">
+                <h2><div class="logoname">VerifEye</div></h2> 
+            </a>
+            <ul>
+                <li><a href="../pages/homepage.html">Home</a></li>
+                <li><a href="../pages/article.html">Article</a></li>
+                <li><a href="../pages/glossary.html">Glossary</a></li>
+                <li><a href="../pages/selfassessment.html">Self-assessment</a></li>
+                <li><a href="../pages/Discussions.html" class="active">Discussions</a></li>
+            </ul>
+            <div id="auth-status"></div>
+        </nav>
+    </header>
+    <hr class="header-line">
+
+    <main class="container main-layout">
+        <div class="page-header">
+            <a href="../pages/Discussions.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;">
+                    <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Back to Discussions</span>
+            </a>
+        </div>
+
+        <div class="view-thread-container">
+            <div id="loading-message">Loading thread...</div>
+            <div id="thread-content-area" style="display: none;">
+                <div id="display-mode">
+                    <h1 id="vt-title" class="vt-title"></h1>
+                    <div id="vt-post-type" class="vt-post-type"></div>
+                    <div class="vt-meta"></div>
+                    <hr class="vt-divider">
+                    <div id="vt-content" class="vt-content"></div>
+                    <div id="vt-tags-list" class="vt-tags-list"></div>
+                    <div id="vt-reactions-bar"></div>
+                </div>
+                <div id="edit-mode" style="display: none;">
+                    <input type="text" id="edit-title-input" class="edit-input-title">
+                    <textarea id="edit-content-input" class="edit-input-content"></textarea>
+                    <div class="edit-actions">
+                        <button id="cancel-edit-btn" class="btn-secondary">Cancel</button>
+                        <button id="save-edit-thread-btn" class="btn-save-changes">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comment-section">
+            <h3>Comments</h3>
+            <div id="comment-list"></div>
+            
+            <div class="comment-box-container">
+                <textarea id="main-comment-input" placeholder="Write a comment..."></textarea>
+                <div class="img-preview-box" id="main-comment-preview-box">
+                    <img id="main-comment-img-preview" src="">
+                    <button onclick="clearMainCommentImage()">X</button>
+                </div>
+                <div class="input-controls">
+                    <button id="submit-comment-btn" class="btn-post-comment">Post Comment</button>
+                    <input type="file" id="main-comment-file" accept="image/*" style="display:none;" onchange="handleMainCommentImage(event)">
+                    <button class="btn-attach-img" onclick="document.getElementById('main-comment-file').click()" title="Attach Image">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="custom-delete-modal" class="confirm-modal">
+        <div class="confirm-content">
+            <h3 style="color: #0F3047; margin-bottom: 10px; font-size: 22px;">Delete Item</h3>
+            <p style="color: #666; font-size: 15px; margin-bottom: 25px;">Are you sure you want to delete this? This action cannot be undone.</p>
+            <div class="confirm-actions">
+                <button id="cancel-delete" class="btn-confirm-cancel">Cancel</button>
+                <button id="confirm-delete" class="btn-confirm-delete">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="report-modal" class="modal">
+        <div class="modal-content" style="width: 450px;">
+            <span class="close-btn" onclick="closeReportModal()">&times;</span>
+            <h2 style="color: #0F3047;">Report Content</h2>
+            <form id="report-form">
+                <input type="hidden" id="report-type">
+                <input type="hidden" id="report-thread-id">
+                <input type="hidden" id="report-comment-id">
+                <input type="hidden" id="report-reply-id">
+                <input type="hidden" id="report-target-user">
+
+                <div class="form-group">
+                    <label>Reason for reporting:</label>
+                    <select id="report-reason" class="input-field" onchange="toggleOtherReason()" required style="cursor: pointer;">
+                        <option value="" disabled selected>Select a reason...</option>
+                        <option value="Harassment or Hate Speech">Harassment or Hate Speech</option>
+                        <option value="Spam or Scams">Spam or Scams</option>
+                        <option value="Inappropriate Content">Inappropriate Content</option>
+                        <option value="Misinformation">Misinformation</option>
+                        <option value="Other">Other...</option>
+                    </select>
+                </div>
+                <div class="form-group" id="other-reason-group" style="display: none;">
+                    <label>Please specify:</label>
+                    <textarea id="report-details" class="input-field" rows="3" placeholder="Provide more details about your report..." style="resize: vertical;"></textarea>
+                </div>
+                <button type="submit" class="btn-save" style="background: #e74c3c;">Submit Report</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="custom-alert-overlay" class="custom-alert-overlay">
+        <div class="custom-alert-box" id="custom-alert-box">
+            <div class="custom-alert-icon" id="custom-alert-icon"></div>
+            <h2 class="custom-alert-title" id="custom-alert-title"></h2>
+            <p class="custom-alert-message" id="custom-alert-message"></p>
+            <button class="custom-alert-btn" onclick="closeCustomAlert()">OK</button>
+        </div>
+    </div>
+
+    <div id="react-list-modal" class="modal" onclick="if(event.target === this) this.style.display='none'">
+        <div class="modal-content" style="width: 400px; padding: 0; overflow: hidden; border-radius: 12px; background: #fff;">
+            <div style="padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 18px; color: #0F3047;">Reactions</h3>
+                <span class="close-btn" style="position: static; font-size: 24px; cursor: pointer; color: #888;" onclick="document.getElementById('react-list-modal').style.display='none'">&times;</span>
+            </div>
+            <div id="react-list-container" style="max-height: 350px; overflow-y: auto; padding: 10px 0;"></div>
+        </div>
+    </div>
+
+    <div id="image-viewer-modal" style="display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); align-items: center; justify-content: center; cursor: zoom-out;" onclick="window.closeLightbox()">
+        <span style="position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer;">&times;</span>
+        <img id="full-size-image" style="max-width: 90%; max-height: 90%; border-radius: 8px; object-fit: contain; cursor: zoom-out; transition: transform 0.2s;">
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="../js/profile.js"></script>
+
+    <script>
+        // Custom Alert Logic
+        window.showCustomAlert = function(title, message, type, onSuccessCallback = null) {
+            const overlay = document.getElementById('custom-alert-overlay');
+            const alertBox = document.getElementById('custom-alert-box');
+            const icon = document.getElementById('custom-alert-icon');
+            document.getElementById('custom-alert-title').innerText = title;
+            document.getElementById('custom-alert-message').innerText = message;
+            if (type === 'error') {
+                alertBox.className = 'custom-alert-box custom-alert-error';
+                icon.innerHTML = "<i class='bx bx-error-circle'></i>";
+            } else {
+                alertBox.className = 'custom-alert-box custom-alert-success';
+                icon.innerHTML = "<i class='bx bx-check-circle'></i>";
+            }
+            overlay.classList.add('show');
+            window.currentAlertCallback = onSuccessCallback;
+        };
+
+        window.closeCustomAlert = function() {
+            document.getElementById('custom-alert-overlay').classList.remove('show');
+            if (typeof window.currentAlertCallback === 'function') {
+                window.currentAlertCallback();
+                window.currentAlertCallback = null;
+            }
+        };
+
+        // REPORT LOGIC
+        function openReportModal(type, threadId, targetUser, commentId = null, replyId = null) {
+            const loggedInUser = localStorage.getItem('verifeye_user');
+            if (!loggedInUser) { showCustomAlert("Access Denied", "You must be logged in to report content.", "error"); return; }
+            
+            document.getElementById('report-type').value = type;
+            document.getElementById('report-thread-id').value = threadId;
+            document.getElementById('report-comment-id').value = commentId;
+            document.getElementById('report-reply-id').value = replyId;
+            document.getElementById('report-target-user').value = targetUser;
+            
+            document.getElementById('report-reason').value = "";
+            document.getElementById('report-details').value = "";
+            document.getElementById('other-reason-group').style.display = 'none';
+
+            const modal = document.getElementById('report-modal');
+            modal.style.display = 'flex';
+            modal.classList.add('show');
+        }
+
+        function closeReportModal() {
+            const modal = document.getElementById('report-modal');
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+        }
+
+        function toggleOtherReason() {
+            const reason = document.getElementById('report-reason').value;
+            document.getElementById('other-reason-group').style.display = reason === 'Other' ? 'block' : 'none';
+        }
+
+        document.getElementById('report-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerText = "Submitting...";
+            btn.disabled = true;
+
+            const payload = {
+                reporter: localStorage.getItem('verifeye_user'),
+                reportedUser: document.getElementById('report-target-user').value,
+                type: document.getElementById('report-type').value,
+                threadId: document.getElementById('report-thread-id').value,
+                commentId: document.getElementById('report-comment-id').value || null,
+                replyId: document.getElementById('report-reply-id').value || null,
+                reason: document.getElementById('report-reason').value,
+                details: document.getElementById('report-details').value
+            };
+
+            try {
+                const res = await fetch('http://localhost:3000/api/reports', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) { 
+                    closeReportModal(); 
+                    showCustomAlert("Success", "Report submitted successfully. Admins will review it.", "success");
+                } 
+                else { showCustomAlert("Error", "Failed to submit report.", "error"); }
+            } catch (err) { showCustomAlert("Error", "Server error.", "error"); } 
+            finally { btn.innerText = "Submit Report"; btn.disabled = false; }
+        });
+
+
+        window.openLightbox = function(src) {
+            document.getElementById('full-size-image').src = src;
+            document.getElementById('image-viewer-modal').style.display = 'flex';
+        };
+        window.closeLightbox = function() {
+            document.getElementById('image-viewer-modal').style.display = 'none';
+            document.getElementById('full-size-image').src = '';
+        };
+
+        const threadId = new URLSearchParams(window.location.search).get('id');
+        let currentThread = null;
+        let deleteTarget = { type: null, commentId: null, replyId: null };
+        const customDeleteModal = document.getElementById('custom-delete-modal');
+
+        function timeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+            if (seconds < 604800) return Math.floor(seconds / 86400) + 'd ago';
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function renderReactions(reactionsArray, type, cId = null, rId = null) {
+            const activeUser = localStorage.getItem('verifeye_user');
+            const userReact = reactionsArray.find(r => r.username === activeUser);
+            const currentType = userReact ? userReact.type : null;
+            const map = {
+                'like': { icon: '👍', color: '#06629b', text: 'Like' },
+                'love': { icon: '❤️', color: '#e74c3c', text: 'Love' },
+                'haha': { icon: '😂', color: '#f1c40f', text: 'Haha' },
+                'wow':  { icon: '😮', color: '#f39c12', text: 'Wow' },
+                'sad':  { icon: '😢', color: '#f39c12', text: 'Sad' },
+                'angry':{ icon: '😡', color: '#e67e22', text: 'Angry' }
+            };
+
+            let btnContent = '👍 Like';
+            let btnColor = '#65676b';
+            if (currentType) {
+                btnContent = `${map[currentType].icon} ${map[currentType].text}`;
+                btnColor = map[currentType].color;
+            }
+
+            const args = `'${type}', ${cId ? `'${cId}'` : 'null'}, ${rId ? `'${rId}'` : 'null'}`;
+            let countDisplay = reactionsArray.length > 0 
+                ? `<div class="react-count-display" onclick="window.showReactList(${args})">${reactionsArray.length} <span style="font-size:10px; margin-left:3px;">►</span></div>` : '';
+
+            return `
+                <div class="reaction-wrapper">
+                    <button class="btn-text-action" style="color: ${btnColor}" onclick="window.submitReact(${args}, 'like')">${btnContent}</button>
+                    <div class="reaction-popup">
+                        <span class="react-icon" onclick="event.stopPropagation(); window.submitReact(${args}, 'like')">👍</span>
+                        <span class="react-icon" onclick="event.stopPropagation(); window.submitReact(${args}, 'love')">❤️</span>
+                        <span class="react-icon" onclick="event.stopPropagation(); window.submitReact(${args}, 'haha')">😂</span>
+                        <span class="react-icon" onclick="event.stopPropagation(); window.submitReact(${args}, 'wow')">😮</span>
+                        <span class="react-icon" onclick="event.stopPropagation(); window.submitReact(${args}, 'sad')">😢</span>
+                        <span class="react-icon" onclick="event.stopPropagation(); window.submitReact(${args}, 'angry')">😡</span>
+                    </div>
+                    ${countDisplay}
+                </div>
+            `;
+        }
+
+        window.showReactList = function(type, cId, rId) {
+            let reactions = [];
+            if (type === 'thread') { reactions = currentThread.reactions || []; } 
+            else if (type === 'comment') {
+                const c = currentThread.comments.find(x => x._id === cId);
+                if (c) reactions = c.reactions || [];
+            } else if (type === 'reply') {
+                const c = currentThread.comments.find(x => x._id === cId);
+                if (c) { const r = c.replies.find(x => x._id === rId); if (r) reactions = r.reactions || []; }
+            }
+
+            const container = document.getElementById('react-list-container');
+            container.innerHTML = '';
+            if (reactions.length === 0) {
+                container.innerHTML = '<p style="padding: 20px; text-align: center; color: #888;">No reactions yet.</p>';
+            } else {
+                const map = { 'like': '👍', 'love': '❤️', 'haha': '😂', 'wow': '😮', 'sad': '😢', 'angry': '😡' };
+                reactions.forEach(react => {
+                    const initial = react.username.charAt(0).toUpperCase();
+                    const hasPfp = react.userPfp && react.userPfp !== "" && react.userPfp !== "null" && react.userPfp !== "undefined";
+                    const avatarHtml = hasPfp
+                        ? `<img src="${react.userPfp}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">`
+                        : `<div style="width: 40px; height: 40px; border-radius: 50%; background: #596272; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">${initial}</div>`;
+
+                    container.insertAdjacentHTML('beforeend', `
+                        <div style="display: flex; align-items: center; padding: 10px 20px; transition: background 0.2s; cursor: default;" onmouseover="this.style.backgroundColor='#f9f9f9'" onmouseout="this.style.backgroundColor='transparent'">
+                            <a href="../pages/user-profile.html?user=${react.username}" class="user-hover-link" data-username="${react.username}" style="display: flex; align-items: center; text-decoration: none;">
+                                <div style="position: relative; margin-right: 15px;">
+                                    ${avatarHtml}
+                                    <div style="position: absolute; bottom: -4px; right: -4px; background: #fff; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2); font-size: 12px;">
+                                        ${map[react.type]}
+                                    </div>
+                                </div>
+                                <span style="font-weight: 600; color: #333; font-size: 16px;">${react.username}</span>
+                            </a>
+                        </div>
+                    `);
+                });
+            }
+            document.getElementById('react-list-modal').style.display = 'flex';
+        };
+
+        window.openEditComment = function(cId) {
+            const textDiv = document.getElementById(`comment-text-${cId}`);
+            const currentText = textDiv.innerText;
+            textDiv.innerHTML = `
+                <textarea id="edit-input-${cId}" style="width:100%; box-sizing:border-box; min-height:80px; margin-top:10px; padding:10px; border-radius:8px; border:1px solid #06629b; font-family: inherit; font-size: 15px; resize: vertical;">${currentText}</textarea>
+                <div style="margin-top:10px; display:flex; gap:10px; align-items:center;">
+                    <button onclick="window.saveEditComment('${cId}')" style="background:#0F3047; color:white; border:none; padding:8px 20px; border-radius:5px; cursor:pointer; font-weight: 600; transition: 0.2s;">Save Changes</button>
+                    <button onclick="window.fetchThread()" style="background:#eee; color:#333; border:1px solid #ccc; padding:8px 20px; border-radius:5px; cursor:pointer; font-weight: 600; transition: 0.2s;">Cancel</button>
+                </div>
+            `;
+        }
+
+        window.saveEditComment = async function(cId) {
+            const newText = document.getElementById(`edit-input-${cId}`).value.trim();
+            if (!newText) { showCustomAlert("Wait", "Comment cannot be empty!", "error"); return; }
+            try {
+                const res = await fetch(`http://localhost:3000/api/discussions/${threadId}/comments/${cId}`, {
+                    method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text: newText})
+                });
+                if(!res.ok) { showCustomAlert("Error", "Failed to save comment! Please ensure your backend server was restarted.", "error"); return; }
+                window.fetchThread();
+            } catch (err) { showCustomAlert("Error", "Server error! Did you restart Node.js?", "error"); }
+        }
+
+        window.openEditReply = function(cId, rId) {
+            const textDiv = document.getElementById(`reply-text-${rId}`);
+            const currentText = textDiv.innerText;
+            textDiv.innerHTML = `
+                <textarea id="edit-input-${rId}" style="width:100%; box-sizing:border-box; min-height:80px; margin-top:10px; padding:10px; border-radius:8px; border:1px solid #06629b; font-family: inherit; font-size: 14px; resize: vertical;">${currentText}</textarea>
+                <div style="margin-top:10px; display:flex; gap:10px; align-items:center;">
+                    <button onclick="window.saveEditReply('${cId}', '${rId}')" style="background:#0F3047; color:white; border:none; padding:8px 20px; border-radius:5px; cursor:pointer; font-weight: 600; transition: 0.2s;">Save Changes</button>
+                    <button onclick="window.fetchThread()" style="background:#eee; color:#333; border:1px solid #ccc; padding:8px 20px; border-radius:5px; cursor:pointer; font-weight: 600; transition: 0.2s;">Cancel</button>
+                </div>
+            `;
+        }
+
+        window.saveEditReply = async function(cId, rId) {
+            const newText = document.getElementById(`edit-input-${rId}`).value.trim();
+            if (!newText) { showCustomAlert("Wait", "Reply cannot be empty!", "error"); return; }
+            try {
+                const res = await fetch(`http://localhost:3000/api/discussions/${threadId}/comments/${cId}/replies/${rId}`, {
+                    method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text: newText})
+                });
+                if(!res.ok) { showCustomAlert("Error", "Failed to save reply!", "error"); return; }
+                window.fetchThread();
+            } catch (err) { showCustomAlert("Error", "Server error!", "error"); }
+        }
+
+        let mainCommentBase64 = "";
+        window.handleMainCommentImage = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    mainCommentBase64 = e.target.result;
+                    document.getElementById('main-comment-img-preview').src = mainCommentBase64;
+                    document.getElementById('main-comment-preview-box').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        window.clearMainCommentImage = function() { mainCommentBase64 = ""; document.getElementById('main-comment-preview-box').style.display = 'none'; document.getElementById('main-comment-file').value = ""; };
+
+        window.activeReplyImages = {}; 
+        window.handleReplyImage = function(event, commentId) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    window.activeReplyImages[commentId] = e.target.result;
+                    document.getElementById(`reply-preview-img-${commentId}`).src = e.target.result;
+                    document.getElementById(`reply-preview-box-${commentId}`).style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        window.clearReplyImage = function(commentId) { window.activeReplyImages[commentId] = ""; document.getElementById(`reply-preview-box-${commentId}`).style.display = 'none'; document.getElementById(`reply-file-${commentId}`).value = ""; };
+        window.toggleReplyBox = function(commentId) { const box = document.getElementById(`reply-box-${commentId}`); box.style.display = box.style.display === 'none' ? 'block' : 'none'; };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!threadId) { document.getElementById('loading-message').innerText = "Thread not found."; return; }
+
+            document.getElementById('cancel-delete').addEventListener('click', () => customDeleteModal.classList.remove('show'));
+            
+            document.getElementById('confirm-delete').addEventListener('click', async () => {
+                if (deleteTarget.type === 'thread') {
+                    await fetch(`http://localhost:3000/api/discussions/${threadId}`, { method: 'DELETE' });
+                    window.location.href = 'Discussions.html';
+                    return; 
+                } else if (deleteTarget.type === 'comment') {
+                    await fetch(`http://localhost:3000/api/discussions/${threadId}/comments/${deleteTarget.commentId}`, { method: 'DELETE' });
+                } else if (deleteTarget.type === 'reply') {
+                    await fetch(`http://localhost:3000/api/discussions/${threadId}/comments/${deleteTarget.commentId}/replies/${deleteTarget.replyId}`, { method: 'DELETE' });
+                }
+                customDeleteModal.classList.remove('show');
+                window.fetchThread(); 
+            });
+
+            window.openDeleteComment = function(cId) { 
+                deleteTarget = { type: 'comment', commentId: cId, replyId: null }; 
+                document.querySelector('#custom-delete-modal p').innerText = "Are you sure you want to delete this comment? This action cannot be undone.";
+                customDeleteModal.classList.add('show'); 
+            };
+            
+            window.openDeleteReply = function(cId, rId) { 
+                deleteTarget = { type: 'reply', commentId: cId, replyId: rId }; 
+                document.querySelector('#custom-delete-modal p').innerText = "Are you sure you want to delete this reply? This action cannot be undone.";
+                customDeleteModal.classList.add('show'); 
+            };
+
+            window.submitReact = async function(targetType, cId, rId, reactType) {
+                const activeUser = localStorage.getItem('verifeye_user');
+                const activePfp = localStorage.getItem('verifeye_pfp') || ""; 
+                if (!activeUser) { showCustomAlert("Access Denied", "Please log in to react.", "error"); return; }
+                
+                let url = `http://localhost:3000/api/discussions/${threadId}/react`;
+                if (targetType === 'comment') url = `http://localhost:3000/api/discussions/${threadId}/comments/${cId}/react`;
+                if (targetType === 'reply') url = `http://localhost:3000/api/discussions/${threadId}/comments/${cId}/replies/${rId}/react`;
+
+                await fetch(url, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: activeUser, userPfp: activePfp, type: reactType }) 
+                });
+                window.fetchThread();
+            };
+
+            window.fetchThread = async function() {
+                const activeUser = localStorage.getItem('verifeye_user');
+                const userRole = localStorage.getItem('verifeye_role');
+
+                const res = await fetch(`http://localhost:3000/api/discussions/${threadId}`);
+                currentThread = await res.json();
+                
+                document.getElementById('vt-title').innerText = currentThread.title;
+                document.getElementById('vt-content').innerHTML = currentThread.content;
+                
+                document.querySelectorAll('#vt-content img').forEach(img => {
+                    img.onclick = function() { window.openLightbox(this.src); };
+                    img.style.cursor = 'zoom-in';
+                });
+
+                document.getElementById('vt-post-type').innerText = currentThread.tag || "Discussion";
+
+                const tagsList = document.getElementById('vt-tags-list');
+                tagsList.innerHTML = '';
+                if (currentThread.tags && currentThread.tags.length > 0) {
+                    currentThread.tags.forEach(t => {
+                        tagsList.innerHTML += `<span class="vt-custom-tag">#${t}</span>`;
+                    });
+                }
+                
+                const avatar = currentThread.authorPfp ? `<img src="${currentThread.authorPfp}" class="vt-avatar">` : `<div class="vt-avatar-placeholder">${currentThread.author.charAt(0).toUpperCase()}</div>`;
+                
+                // Admin or Owner can delete thread
+                let actions = "";
+                if (currentThread.author === activeUser) {
+                    actions += `<button id="edit-thread-btn" class="btn-edit">Edit</button>`;
+                }
+                if (currentThread.author === activeUser || userRole === 'admin') {
+                    actions += `<button id="delete-thread-btn" class="btn-delete">Delete</button>`;
+                }
+                
+                let reportThreadAction = (activeUser && activeUser !== currentThread.author) 
+                    ? `<button class="btn-secondary" style="color: #e74c3c; background: #fff; border: 1px solid #e74c3c;" onclick="openReportModal('thread', '${currentThread._id}', '${currentThread.author}')"><i class='bx bxs-flag-alt'></i> Report</button>` 
+                    : "";
+
+                actions = `<div class="owner-actions">${reportThreadAction}${actions}</div>`;
+                
+                const threadEditedMark = currentThread.isEdited ? `<span style="font-size:12px; color:#888; font-style:italic; margin-left:8px;">(Edited)</span>` : "";
+
+                document.querySelector('.vt-meta').innerHTML = `
+                    <a href="../pages/user-profile.html?user=${currentThread.author}" class="user-hover-link" data-username="${currentThread.author}" style="display:flex; align-items:center; gap:15px;">
+                        ${avatar}
+                        <div class="vt-author-info">
+                            <span class="vt-author">${currentThread.author}</span>
+                            <span class="vt-date">${timeAgo(currentThread.createdAt)}${threadEditedMark}</span>
+                        </div>
+                    </a>
+                    ${actions}
+                `;
+                document.getElementById('vt-reactions-bar').innerHTML = renderReactions(currentThread.reactions || [], 'thread');
+                
+                const commentList = document.getElementById('comment-list');
+                commentList.innerHTML = ''; 
+                
+                if (currentThread.comments.length > 0) {
+                    currentThread.comments.forEach(comment => {
+                        const pfp = comment.authorPfp ? `<img src="${comment.authorPfp}" class="comment-avatar">` : `<div class="comment-avatar-placeholder">${comment.author.charAt(0).toUpperCase()}</div>`;
+                        const commentImage = comment.image ? `<img src="${comment.image}" class="comment-attached-img" onclick="window.openLightbox(this.src)">` : "";
+                        const cEdited = comment.isEdited ? `<span style="font-size:11px; color:#888; font-style:italic; margin-left:5px;">(Edited)</span>` : "";
+
+                        let cActionsHtml = `<div style="margin-left: auto; display: flex; gap: 8px;">`;
+                        
+                        if (activeUser && activeUser !== comment.author) {
+                            cActionsHtml += `<button class="btn-delete-comment" onclick="openReportModal('comment', '${currentThread._id}', '${comment.author}', '${comment._id}')" title="Report">
+                                                <i class='bx bxs-flag-alt'></i>
+                                             </button>`;
+                        }
+                        
+                        if (comment.author === activeUser) {
+                            cActionsHtml += `
+                                <button class="btn-delete-comment" onclick="window.openEditComment('${comment._id}')" title="Edit">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#f39c12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px; height:17px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </button>
+                            `;
+                        }
+
+                        if (comment.author === activeUser || userRole === 'admin') {
+                            cActionsHtml += `
+                                <button class="btn-delete-comment" onclick="window.openDeleteComment('${comment._id}')" title="Delete">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px; height:17px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            `;
+                        }
+                        cActionsHtml += `</div>`;
+
+                        let repliesHtml = "";
+                        if (comment.replies && comment.replies.length > 0) {
+                            repliesHtml = `<div class="replies-container">`;
+                            comment.replies.forEach(reply => {
+                                const rpfp = reply.authorPfp ? `<img src="${reply.authorPfp}" class="reply-avatar">` : `<div class="reply-avatar-placeholder" style="background:#596272; color:#fff; display:flex; align-items:center; justify-content:center;">${reply.author.charAt(0).toUpperCase()}</div>`;
+                                const replyImage = reply.image ? `<img src="${reply.image}" class="comment-attached-img" style="max-width: 200px;" onclick="window.openLightbox(this.src)">` : "";
+                                const rEdited = reply.isEdited ? `<span style="font-size:11px; color:#888; font-style:italic; margin-left:5px;">(Edited)</span>` : "";
+
+                                let rActionsHtml = `<div style="margin-left: auto; display: flex; gap: 8px;">`;
+                                
+                                if (activeUser && activeUser !== reply.author) {
+                                    rActionsHtml += `<button class="btn-delete-comment" onclick="openReportModal('reply', '${currentThread._id}', '${reply.author}', '${comment._id}', '${reply._id}')" title="Report">
+                                                        <i class='bx bxs-flag-alt'></i>
+                                                     </button>`;
+                                }
+
+                                if (reply.author === activeUser) {
+                                    rActionsHtml += `
+                                        <button class="btn-delete-comment" onclick="window.openEditReply('${comment._id}', '${reply._id}')" title="Edit">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="#f39c12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px; height:15px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                        </button>
+                                    `;
+                                }
+
+                                if (reply.author === activeUser || userRole === 'admin') {
+                                    rActionsHtml += `
+                                        <button class="btn-delete-comment" onclick="window.openDeleteReply('${comment._id}', '${reply._id}')" title="Delete">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px; height:15px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                        </button>
+                                    `;
+                                }
+                                rActionsHtml += `</div>`;
+
+                                // ADDED ID TO REPLY
+                                repliesHtml += `
+                                    <div class="reply-item" id="reply-${reply._id}">
+                                        <div class="comment-meta">
+                                            <a href="../pages/user-profile.html?user=${reply.author}" class="user-hover-link" data-username="${reply.author}" style="display:flex; align-items:center; gap:8px;">
+                                                ${rpfp} <span class="comment-author">${reply.author}</span> 
+                                            </a>
+                                            <span class="comment-date" style="margin-left: 5px;">${timeAgo(reply.createdAt)}${rEdited}</span> 
+                                            ${rActionsHtml}
+                                        </div>
+                                        <div class="reply-text" id="reply-text-${reply._id}">${reply.text}</div>
+                                        <div style="margin-left:34px;">${replyImage}</div>
+                                        <div class="comment-actions-bar" style="margin-left:34px; margin-top:3px;">
+                                            ${renderReactions(reply.reactions || [], 'reply', comment._id, reply._id)}
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            repliesHtml += `</div>`;
+                        }
+
+                        // ADDED ID TO COMMENT
+                        commentList.insertAdjacentHTML('beforeend', `
+                            <div class="comment-item" id="comment-${comment._id}">
+                                <div class="comment-meta">
+                                    <a href="../pages/user-profile.html?user=${comment.author}" class="user-hover-link" data-username="${comment.author}" style="display:flex; align-items:center; gap:8px;">
+                                        ${pfp} <span class="comment-author">${comment.author}</span>
+                                    </a>
+                                    <span class="comment-date" style="margin-left: 5px;">${timeAgo(comment.createdAt)}${cEdited}</span> 
+                                    ${cActionsHtml}
+                                </div>
+                                <div class="comment-text" id="comment-text-${comment._id}">${comment.text}</div>
+                                <div style="margin-left:40px;">${commentImage}</div>
+                                
+                                <div class="comment-actions-bar">
+                                    ${renderReactions(comment.reactions || [], 'comment', comment._id)}
+                                    <button class="btn-text-action" onclick="window.toggleReplyBox('${comment._id}')" style="margin-left:15px; color:#65676b;">Reply</button>
+                                </div>
+                                
+                                ${repliesHtml}
+
+                                <div class="reply-box-container" id="reply-box-${comment._id}" style="display:none;">
+                                    <textarea id="reply-input-${comment._id}" placeholder="Write a reply..."></textarea>
+                                    <div class="img-preview-box" id="reply-preview-box-${comment._id}">
+                                        <img id="reply-preview-img-${comment._id}" src="">
+                                        <button onclick="window.clearReplyImage('${comment._id}')">X</button>
+                                    </div>
+                                    <div class="input-controls">
+                                        <button class="btn-post-reply" onclick="window.submitReply('${comment._id}')">Post Reply</button>
+                                        <input type="file" id="reply-file-${comment._id}" accept="image/*" style="display:none;" onchange="window.handleReplyImage(event, '${comment._id}')">
+                                        <button class="btn-attach-img" style="padding: 6px;" onclick="document.getElementById('reply-file-${comment._id}').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></button>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                    });
+                }
+
+                document.getElementById('loading-message').style.display = 'none';
+                document.getElementById('thread-content-area').style.display = 'block';
+
+                const editBtn = document.getElementById('edit-thread-btn');
+                if (editBtn) {
+                    editBtn.onclick = () => {
+                        document.getElementById('display-mode').style.display = 'none';
+                        document.getElementById('edit-mode').style.display = 'block';
+                        document.getElementById('edit-title-input').value = currentThread.title;
+                        document.getElementById('edit-content-input').value = currentThread.content;
+                    };
+                }
+                
+                const deleteBtn = document.getElementById('delete-thread-btn');
+                if (deleteBtn) {
+                    deleteBtn.onclick = () => {
+                        deleteTarget = { type: 'thread', commentId: null, replyId: null };
+                        document.querySelector('#custom-delete-modal p').innerText = "Are you sure you want to delete this thread? This action cannot be undone.";
+                        customDeleteModal.classList.add('show');
+                    };
+                }
+
+                // DEEP LINK LOGIC FOR REPORT HIGHLIGHTING
+                setTimeout(() => {
+                    const hash = window.location.hash;
+                    if (hash) {
+                        const targetEl = document.querySelector(hash);
+                        if (targetEl) {
+                            // Adding a slight offset because of the sticky header
+                            const headerOffset = 100;
+                            const elementPosition = targetEl.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                            
+                            window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+                            targetEl.classList.add('highlight-target');
+                        }
+                    }
+                }, 300); // 300ms delay to ensure images/fonts are painted
+            };
+
+            document.getElementById('submit-comment-btn').onclick = async () => {
+                const activeUser = localStorage.getItem('verifeye_user');
+                const pfp = localStorage.getItem('verifeye_pfp');
+                const text = document.getElementById('main-comment-input').value.trim();
+                if(!text && !mainCommentBase64) return;
+                if(!activeUser) { showCustomAlert("Access Denied", "You must be logged in to comment.", "error"); return; }
+                
+                await fetch(`http://localhost:3000/api/discussions/${threadId}/comments`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ author: activeUser, authorPfp: pfp || "", text: text, image: mainCommentBase64 })
+                });
+                document.getElementById('main-comment-input').value = ""; 
+                window.clearMainCommentImage();
+                window.fetchThread(); 
+            };
+
+            window.submitReply = async function(commentId) {
+                const activeUser = localStorage.getItem('verifeye_user');
+                const pfp = localStorage.getItem('verifeye_pfp');
+                const text = document.getElementById(`reply-input-${commentId}`).value.trim();
+                const image = window.activeReplyImages[commentId] || "";
+                if(!text && !image) return;
+                if(!activeUser) { showCustomAlert("Access Denied", "You must be logged in to reply.", "error"); return; }
+
+                await fetch(`http://localhost:3000/api/discussions/${threadId}/comments/${commentId}/replies`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ author: activeUser, authorPfp: pfp || "", text: text, image: image })
+                });
+                window.activeReplyImages[commentId] = ""; 
+                window.fetchThread();
+            };
+
+            document.getElementById('save-edit-thread-btn').onclick = async () => {
+                const title = document.getElementById('edit-title-input').value;
+                const content = document.getElementById('edit-content-input').value;
+                
+                try {
+                    const res = await fetch(`http://localhost:3000/api/discussions/${threadId}`, {
+                        method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ title, content })
+                    });
+                    if(!res.ok) { showCustomAlert("Error", "Failed to edit thread! Did you restart the server?", "error"); return; }
+                    window.location.reload();
+                } catch(e) {
+                    showCustomAlert("Error", "Server error!", "error");
+                }
+            };
+
+            document.getElementById('cancel-edit-btn').onclick = () => window.location.reload();
+
+            window.fetchThread();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VerifEye | Admin Dashboard</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <link rel="stylesheet" href="../css/admin-dashboard.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="../pages/homepage.html" class="logo" style="text-decoration: none; color: inherit; cursor: pointer;">
+                <img src="../assets/images/logo.png" alt="VerifEye">
+                <h2><div class="logoname">VerifEye</div></h2> 
+            </a>
+            <ul>
+                <li><a href="../pages/homepage.html">Home</a></li>
+                <li><a href="../pages/article.html">Article</a></li>
+                <li><a href="../pages/glossary.html">Glossary</a></li>
+                <li><a href="../pages/selfassessment.html">Self-assessment</a></li>
+                <li><a href="../pages/Discussions.html">Discussions</a></li>
+            </ul>
+            <div id="auth-status"></div>
+        </nav>
+    </header>
+
+    <main class="admin-container">
+        <div class="admin-header">
+            <h1>Admin Dashboard</h1>
+            <p>Review and moderate community-submitted articles, user reports, and accounts.</p>
+        </div>
+
+        <div class="dashboard-tabs">
+            <button class="tab-btn active" data-target="pending">Pending Articles</button>
+            <button class="tab-btn" data-target="approved">Approved Articles</button>
+            <button class="tab-btn" data-target="rejected">Rejected Articles</button>
+            <button class="tab-btn" data-target="reports">Reported Content</button>
+            <button class="tab-btn" data-target="users">User Management</button>
+        </div>
+
+        <div class="search-box-global" id="article-search-container" style="display: none;">
+            <input type="text" id="article-search-input" placeholder="Search by Title, Category, or Author...">
+        </div>
+
+        <div id="loading-spinner" style="text-align: center; padding: 40px; color: #666;">Loading...</div>
+
+        <div class="article-queue" id="article-queue" style="display: none;"></div>
+
+        <div class="reported-content-container" id="reported-content" style="display: none;">
+            <div id="reports-list"></div>
+        </div>
+
+        <div class="user-management-container" id="user-management" style="display: none;">
+            <div class="search-box-global" id="user-search-container">
+                <input type="text" id="user-search-input" placeholder="Search user by username...">
+            </div>
+            
+            <div id="user-search-results">
+                <p style="text-align: center; color: #888; padding: 20px;">Enter a username above to search for an account.</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="custom-confirm-modal" class="confirm-modal">
+        <div class="confirm-content">
+            <h3 id="confirm-title" style="color: #0F3047; margin-bottom: 10px; font-size: 22px;">Confirm Action</h3>
+            <p id="confirm-message" style="color: #666; font-size: 15px; margin-bottom: 25px;">Are you sure?</p>
+            <div class="confirm-actions">
+                <button id="btn-cancel-confirm" class="btn-confirm-cancel">Cancel</button>
+                <button id="btn-do-confirm" class="btn-confirm-action">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-prompt-modal" class="confirm-modal">
+        <div class="confirm-content" style="width: 400px;">
+            <h3 style="color: #0F3047; margin-bottom: 10px; font-size: 22px;">Reject Article</h3>
+            <p style="color: #666; font-size: 14px; margin-bottom: 15px;">Provide a reason for rejection (the author will see this):</p>
+            <textarea id="reject-reason-input" style="width: 100%; min-height: 80px; margin-bottom: 20px; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-family: inherit; resize: vertical; outline: none;"></textarea>
+            <div class="confirm-actions">
+                <button id="btn-cancel-prompt" class="btn-confirm-cancel">Cancel</button>
+                <button id="btn-submit-prompt" class="btn-confirm-action" style="background: #e74c3c;">Reject</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-ban-modal" class="confirm-modal">
+        <div class="confirm-content" style="width: 400px;">
+            <h3 style="color: #0F3047; margin-bottom: 10px; font-size: 22px;">Ban User</h3>
+            <p id="ban-user-text" style="color: #666; font-size: 14px; margin-bottom: 15px;">Select ban duration:</p>
+            <div class="ban-options" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left;">
+                <label class="ban-option-label"><input type="radio" name="ban_duration" value="24" checked> 24 Hours</label>
+                <label class="ban-option-label"><input type="radio" name="ban_duration" value="168"> 7 Days</label>
+                <label class="ban-option-label"><input type="radio" name="ban_duration" value="0"> Permanent Ban</label>
+            </div>
+            <div class="confirm-actions">
+                <button id="btn-cancel-ban" class="btn-confirm-cancel">Cancel</button>
+                <button id="btn-submit-ban" class="btn-confirm-action" style="background: #d35400;">Confirm Ban</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-alert-overlay" class="custom-alert-overlay">
+        <div class="custom-alert-box" id="custom-alert-box">
+            <div class="custom-alert-icon" id="custom-alert-icon"></div>
+            <h2 class="custom-alert-title" id="custom-alert-title"></h2>
+            <p class="custom-alert-message" id="custom-alert-message"></p>
+            <button class="custom-alert-btn" onclick="closeCustomAlert()">OK</button>
+        </div>
+    </div>
+
+    <script src="../js/profile.js"></script>
+    <script src="../js/admin-dashboard.js"></script>
+</body>
+</html>

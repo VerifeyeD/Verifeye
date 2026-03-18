@@ -9,16 +9,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@100..900&display=swap" rel="stylesheet">
     
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="../css/homepage.css">
 </head>
 <body>
 
     <section class="main">
         <nav>
-            <div class="logo">
+            <a href="../pages/homepage.html" class="logo" style="text-decoration: none; color: inherit; cursor: pointer;">
                 <img src="../assets/images/logo.png" alt="VerifEye">
                 <h2><div class="logoname">VerifEye</div></h2> 
-            </div>
+            </a>
             <ul>
                 <li><a href="../pages/homepage.html">Home</a></li>
                 <li><a href="../pages/article.html">Article</a></li>
@@ -26,12 +28,9 @@
                 <li><a href="../pages/selfassessment.html">Self-assessment</a></li>
                 <li><a href="../pages/Discussions.html">Discussions</a></li>
             </ul>
-            <button class="btn-login">Login</button>
-            <script>
-                document.querySelector('.btn-login').addEventListener('click', function() {
-                    window.location.href = '../pages/login.html';
-                });
-            </script>
+
+            <div id="auth-status">
+                </div>
         </nav>
 
         <div class="hero-content">
@@ -44,6 +43,8 @@
             <p>&copy; VerifEye 2026. Fighting misinformation through education.</p>
         </div>
     </section>
-    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="../js/profile.js"></script>
 </body>
 </html>

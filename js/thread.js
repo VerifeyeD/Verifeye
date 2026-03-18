@@ -1,151 +1,135 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- 1. SIMPLE FORMATTING TOOLS ---
-    const btnBold = document.getElementById('btnBold');
-    const btnItalic = document.getElementById('btnItalic');
-    const btnUnderline = document.getElementById('btnUnderline');
-    const btnUl = document.getElementById('btnUl');
-    const btnOl = document.getElementById('btnOl');
-    const btnIndent = document.getElementById('btnIndent');
-    const btnOutdent = document.getElementById('btnOutdent');
-    const btnAlign = document.getElementById('btnAlign');
-    const btnQuote = document.getElementById('btnQuote');
-    const btnLink = document.getElementById('btnLink');
+    // 1. Topic Selector Logic
+    const topicRadios = document.querySelectorAll('input[name="topic_type"]');
+    topicRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            document.querySelectorAll('.topic-option').forEach(opt => opt.classList.remove('selected'));
+            if(e.target.checked) e.target.parentElement.classList.add('selected');
+        });
+    });
 
-    function exec(command, value = null) {
-        document.execCommand(command, false, value);
-        document.getElementById('editor').focus();
+    // 2. Custom Tags Input Logic
+    const tagsInput = document.getElementById('tagsInput');
+    const tagContainer = document.getElementById('tagContainer');
+    
+    if (tagsInput && tagContainer) {
+        tagsInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const val = this.value.trim();
+                if (val) {
+                    const span = document.createElement('span');
+                    span.className = 'created-tag';
+                    span.innerHTML = `${val} <span class="remove-tag" onclick="this.parentElement.remove()" style="margin-left: 6px; cursor: pointer; opacity: 0.6;">x</span>`;
+                    tagContainer.insertBefore(span, tagsInput);
+                    this.value = '';
+                }
+            }
+        });
     }
 
-    btnBold.addEventListener('click', () => exec('bold'));
-    btnItalic.addEventListener('click', () => exec('italic'));
-    btnUnderline.addEventListener('click', () => exec('underline'));
-    btnUl.addEventListener('click', () => exec('insertUnorderedList'));
-    btnOl.addEventListener('click', () => exec('insertOrderedList'));
-    btnIndent.addEventListener('click', () => exec('indent'));
-    btnOutdent.addEventListener('click', () => exec('outdent'));
-    btnAlign.addEventListener('click', () => exec('justifyCenter'));
-    btnQuote.addEventListener('click', () => exec('formatBlock', 'BLOCKQUOTE'));
+    // 3. Rich Text Editor Controls
+    const execCmd = (command, value = null) => document.execCommand(command, false, value);
     
-    btnLink.addEventListener('click', () => {
-        const url = prompt('Enter link URL:', 'https://');
-        if (url) exec('createLink', url);
-    });
+    const btnBold = document.getElementById('btnBold');
+    if(btnBold) btnBold.onclick = () => execCmd('bold');
+    
+    const btnItalic = document.getElementById('btnItalic');
+    if(btnItalic) btnItalic.onclick = () => execCmd('italic');
+    
+    const btnUnderline = document.getElementById('btnUnderline');
+    if(btnUnderline) btnUnderline.onclick = () => execCmd('underline');
 
-    // --- 2. COLOR PICKER LOGIC ---
-    const btnColor = document.getElementById('btnColor');
-    const colorInput = document.getElementById('colorPickerInput');
+    const btnUl = document.getElementById('btnUl');
+    if(btnUl) btnUl.onclick = () => execCmd('insertUnorderedList');
 
-    btnColor.addEventListener('click', () => {
-        colorInput.click();
-    });
+    const btnOl = document.getElementById('btnOl');
+    if(btnOl) btnOl.onclick = () => execCmd('insertOrderedList');
 
-    colorInput.addEventListener('input', (e) => {
-        exec('foreColor', e.target.value);
-        btnColor.style.borderBottomColor = e.target.value;
-        btnColor.style.color = e.target.value;
-    });
-
-    // --- 3. IMAGE UPLOAD LOGIC ---
+    // Image Upload inside Editor
     const btnImage = document.getElementById('btnImage');
-    const imageInput = document.getElementById('imageUploadInput');
-
-    btnImage.addEventListener('click', () => {
-        imageInput.click();
-    });
-
-    imageInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                exec('insertImage', e.target.result);
-            };
-            reader.readAsDataURL(file);
-        }
-        imageInput.value = '';
-    });
-
-    // --- 4. FORMAT DROPDOWN LOGIC ---
-    const dropdownBtn = document.getElementById('paragraphDropdownBtn');
-    const dropdownMenu = document.getElementById('paragraphDropdownMenu');
-    const currentFormatSpan = document.getElementById('currentFormat');
-    const dropdownOptions = document.querySelectorAll('#paragraphDropdownMenu .dropdown-option');
-
-    dropdownBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        dropdownMenu.classList.toggle('show');
-    });
-
-    dropdownOptions.forEach(option => {
-        option.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            const cmd = option.getAttribute('data-cmd');
-            const val = option.getAttribute('data-val');
-            exec(cmd, val);
-            currentFormatSpan.textContent = option.textContent;
-            dropdownMenu.classList.remove('show');
-        });
-    });
-
-    // --- 5. EMOJI PICKER LOGIC ---
-    const btnEmoji = document.getElementById('btnEmoji');
-    const emojiMenu = document.getElementById('emojiDropdownMenu');
-    const emojiOptions = document.querySelectorAll('.emoji-option');
-
-    btnEmoji.addEventListener('click', (e) => {
-        e.stopPropagation();
-        emojiMenu.classList.toggle('show');
-    });
-
-    emojiOptions.forEach(emoji => {
-        emoji.addEventListener('mousedown', (e) => {
-            e.preventDefault(); // Prevents editor from losing focus
-            // Insert the emoji text into the editor
-            exec('insertText', emoji.textContent);
-            emojiMenu.classList.remove('show');
-        });
-    });
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!dropdownBtn.contains(e.target)) {
-            dropdownMenu.classList.remove('show');
-        }
-        if (!btnEmoji.contains(e.target)) {
-            emojiMenu.classList.remove('show');
-        }
-    });
-
-    // --- 6. TOPIC & TAGS LOGIC ---
-    const topicLabels = document.querySelectorAll('.topic-option');
-    topicLabels.forEach(label => {
-        label.addEventListener('click', () => {
-            topicLabels.forEach(l => l.classList.remove('selected'));
-            label.classList.add('selected');
-            const radio = label.querySelector('input[type="radio"]');
-            if (radio) radio.checked = true;
-        });
-    });
-
-    const tagInput = document.getElementById('tagsInput');
-    const tagContainer = document.getElementById('tagContainer');
-    tagContainer.addEventListener('click', () => tagInput.focus());
-
-    tagInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const tagText = tagInput.value.trim();
-            if (tagText !== "") {
-                const tag = document.createElement('span');
-                tag.classList.add('created-tag');
-                tag.innerHTML = `${tagText} <span class="remove-tag">×</span>`;
-                tagContainer.insertBefore(tag, tagInput);
-                tag.querySelector('.remove-tag').addEventListener('click', (e) => {
-                    e.stopPropagation(); tag.remove();
-                });
-                tagInput.value = "";
+    const imageUploadInput = document.getElementById('imageUploadInput');
+    if (btnImage && imageUploadInput) {
+        btnImage.onclick = () => imageUploadInput.click();
+        imageUploadInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    execCmd('insertImage', e.target.result);
+                };
+                reader.readAsDataURL(file);
             }
+        });
+    }
+
+    // NEW: Foolproof click to enlarge inside the editor
+    document.addEventListener('click', (e) => {
+        if (e.target.tagName === 'IMG' && e.target.closest('.editor-content')) {
+            const viewer = document.getElementById('image-viewer-modal');
+            const fullImg = document.getElementById('full-size-image');
+            fullImg.src = e.target.src;
+            viewer.style.display = 'flex'; // Forces the modal open
         }
     });
+
+    // 4. POST BUTTON LOGIC
+    const postBtn = document.querySelector('.btn-post');
+    if (postBtn) {
+        postBtn.addEventListener('click', async () => {
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('editor').innerHTML.trim();
+            
+            const selectedTopic = document.querySelector('input[name="topic_type"]:checked').parentElement.textContent.trim();
+            
+            const tagsElements = document.querySelectorAll('.created-tag');
+            const tagsArray = Array.from(tagsElements).map(el => el.textContent.replace('x', '').trim());
+
+            if (!title || !content) {
+                alert("Please provide both a title and a description.");
+                return;
+            }
+
+            const loggedInUser = localStorage.getItem('verifeye_user');
+            const savedPfp = localStorage.getItem('verifeye_pfp');
+
+            if (!loggedInUser) {
+                alert("You must be logged in to post a thread.");
+                window.location.href = '../pages/login.html';
+                return;
+            }
+
+            try {
+                postBtn.innerText = "Posting...";
+                postBtn.disabled = true;
+
+                const response = await fetch('http://localhost:3000/api/discussions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        title: title, 
+                        author: loggedInUser, 
+                        authorPfp: savedPfp || "", 
+                        content: content, 
+                        tag: selectedTopic,   
+                        tags: tagsArray       
+                    })
+                });
+
+                if (response.ok) {
+                    window.location.href = '../pages/Discussions.html';
+                } else {
+                    alert("Failed to post thread.");
+                    postBtn.innerText = "Post";
+                    postBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error("Error posting thread:", error);
+                alert("Server error. Is the backend running?");
+                postBtn.innerText = "Post";
+                postBtn.disabled = false;
+            }
+        });
+    }
 });
