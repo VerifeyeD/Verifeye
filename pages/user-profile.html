@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VerifEye | User Profile</title>
+    
     <link rel="stylesheet" href="../css/user-profile.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
 </head>
 <body>
+
     <header>
         <nav>
             <a href="../pages/homepage.html" class="logo" style="text-decoration: none; color: inherit; cursor: pointer;">
@@ -27,49 +33,46 @@
     </header>
     <hr class="header-line">
 
-    <main class="container">
-        <div id="profile-error" style="display:none; text-align:center; padding: 50px; font-size: 24px; color: #e74c3c;">
-            User not found.
-        </div>
-
-        <div id="profile-content" class="profile-layout" style="display:none;">
-            <div class="profile-sidebar">
-                <div class="profile-avatar-large" id="up-avatar"></div>
-                <h1 class="profile-username" id="up-username">Loading...</h1>
+    <main class="profile-main">
+        <div id="loading-spinner" style="text-align: center; padding: 50px; color: #888; font-size: 18px;">Loading profile...</div>
+        
+        <div class="profile-container-inner" id="profile-content" style="display: none;">
+            
+            <div class="profile-card">
+                <div id="pfp-display" class="profile-avatar"></div>
+                <h1 id="username-display" class="profile-username"></h1>
+                <div class="profile-role-badge" id="role-display"></div>
                 
-                <div class="profile-bio" id="up-bio"></div>
+                <p id="bio-display" class="profile-bio"></p>
+                <a id="website-display" class="profile-website" target="_blank" style="display: none;">
+                    <i class='bx bx-link'></i> <span id="website-text"></span>
+                </a>
                 
-                <div class="profile-detail-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                    Joined <span id="up-join"></span>
-                </div>
+                <p id="joindate-display" class="profile-joindate"></p>
                 
-                <div class="profile-detail-item" id="up-website-container" style="display:none;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                    <a href="#" target="_blank" id="up-website"></a>
-                </div>
-
-                <button id="edit-profile-btn" class="btn-profile-page-edit" style="display: none;">Edit Profile</button>
+                <button id="edit-profile-btn" class="btn-edit-profile" style="display: none;">Edit Profile</button>
             </div>
 
-            <div class="profile-main">
-                <h2 class="section-title">Contribution Summary</h2>
+            <div class="contribution-section">
+                <h2>Contribution Summary</h2>
+                <p class="section-desc">Click on any stat below to view the full activity log.</p>
                 
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" id="stat-articles">0</div>
-                        <div class="stat-label">Articles Submitted</div>
+                    <div class="stat-box" id="stat-articles" title="View Articles">
+                        <h3 id="count-articles">0</h3>
+                        <p>Articles Submitted</p>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="stat-discussions">0</div>
-                        <div class="stat-label">Discussions Started</div>
+                    <div class="stat-box" id="stat-discussions" title="View Discussions">
+                        <h3 id="count-discussions">0</h3>
+                        <p>Discussions Started</p>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="stat-comments">0</div>
-                        <div class="stat-label">Comments Written</div>
+                    <div class="stat-box" id="stat-comments" title="View Comments">
+                        <h3 id="count-comments">0</h3>
+                        <p>Comments Written</p>
                     </div>
                 </div>
             </div>
+
         </div>
     </main>
 
@@ -83,11 +86,9 @@
                 <h3>Resources</h3>
                 <div class="link-grid">
                     <a href="../pages/Article.html">Article</a>
-                    <a href="#">Image Deepfakes</a>
                     <a href="../pages/glossary.html">Glossary</a>
-                    <a href="#">Audio Deepfakes</a>
                     <a href="../pages/selfassessment.html">Self-Assessment</a>
-                    <a href="#">Video Deepfakes</a>
+                    <a href="../pages/Discussions.html">Discussions</a>
                 </div>
                 <p class="copyright">© VerifEye 2026. Fighting misinformation through education.</p>
             </div>
@@ -100,61 +101,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="../js/profile.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const targetUser = urlParams.get('user');
-            const loggedInUser = localStorage.getItem('verifeye_user');
-
-            if (!targetUser) {
-                document.getElementById('profile-error').style.display = 'block';
-                document.getElementById('profile-error').innerText = "No user specified.";
-                return;
-            }
-
-            try {
-                const response = await fetch(`http://localhost:3000/api/user/${targetUser}`);
-                if (!response.ok) {
-                    document.getElementById('profile-error').style.display = 'block';
-                    return;
-                }
-
-                const data = await response.json();
-                const user = data.user;
-                const stats = data.stats;
-
-                document.getElementById('profile-content').style.display = 'grid';
-                document.getElementById('up-username').innerText = user.username;
-                document.getElementById('up-bio').innerText = user.bio || "No bio provided.";
-                
-                const joinDate = new Date(user.joinDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                document.getElementById('up-join').innerText = joinDate;
-
-                if (user.website) {
-                    document.getElementById('up-website-container').style.display = 'flex';
-                    document.getElementById('up-website').innerText = user.website.replace(/^https?:\/\//, '');
-                    document.getElementById('up-website').href = user.website.startsWith('http') ? user.website : `https://${user.website}`;
-                }
-
-                const initial = user.username.charAt(0).toUpperCase();
-                document.getElementById('up-avatar').innerHTML = user.pfp 
-                    ? `<img src="${user.pfp}">` 
-                    : `<div class="avatar-placeholder">${initial}</div>`;
-
-                document.getElementById('stat-articles').innerText = stats.articles;
-                document.getElementById('stat-discussions').innerText = stats.discussions;
-                document.getElementById('stat-comments').innerText = stats.comments;
-
-                if (loggedInUser === targetUser) {
-                    document.getElementById('edit-profile-btn').style.display = 'block';
-                }
-
-            } catch (err) {
-                console.error(err);
-                document.getElementById('profile-error').style.display = 'block';
-            }
-        });
-    </script>
+    <script src="../js/user-profile.js"></script>
 </body>
 </html>

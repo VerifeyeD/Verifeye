@@ -18,11 +18,21 @@ app.use('/js', express.static(path.join(__dirname, 'js')));
 app.use('/pages', express.static(path.join(__dirname, 'pages')));
 
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('Successfully connected to MongoDB Atlas!'))
+    .then(async () => {
+        console.log('Successfully connected to MongoDB Atlas!');
+        const founders = ['hevabi', 'hevabisala', 'tristan kirby', 'ralphy'];
+        for (let name of founders) {
+            await User.findOneAndUpdate(
+                { username: { $regex: new RegExp(`^${name}$`, 'i') } },
+                { $set: { isSuperAdmin: true, role: 'admin' } }
+            );
+        }
+        console.log('Super Admin privileges verified and locked.');
+    })
     .catch((error) => console.error('Error connecting to database:', error));
 
 // --- CONSTANTS ---
-const ADMIN_NAMES = ['hevabi', 'tristan kirby', 'ralphy'];
+const SUPER_ADMINS = ['hevabi', 'hevabisala', 'tristan kirby', 'ralphy'];
 
 // --- SCHEMAS ---
 const notificationSchema = new mongoose.Schema({
@@ -108,16 +118,16 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     pfp: { type: String, default: "" },
-    bio: { type: String, default: "Student researching AI and deepfake detection." },
+    bio: { type: String, default: "" }, 
     website: { type: String, default: "" },
     role: { type: String, enum: ['user', 'admin'], default: 'user' }, 
+    isSuperAdmin: { type: Boolean, default: false }, 
     isBanned: { type: Boolean, default: false },
     banUntil: { type: Date, default: null },
     joinDate: { type: Date, default: Date.now }
 });
 const User = mongoose.model('User', userSchema);
 
-// NEW: Glossary Schema
 const glossarySchema = new mongoose.Schema({
     term: { type: String, required: true },
     description: { type: String, required: true },
@@ -125,6 +135,14 @@ const glossarySchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 const Glossary = mongoose.model('Glossary', glossarySchema);
+
+const adminRequestSchema = new mongoose.Schema({
+    username: String,
+    reason: String,
+    status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+    createdAt: { type: Date, default: Date.now }
+});
+const AdminRequest = mongoose.model('AdminRequest', adminRequestSchema);
 
 async function createNotification(recipient, sender, senderPfp, type, threadId, message) {
     if (recipient === sender || recipient === "Deleted account") return; 
@@ -157,26 +175,35 @@ app.put('/api/notifications/:id/read', async (req, res) => {
     } catch (error) { res.status(500).json({ error: "Failed to update notification" }); }
 });
 
+// --- NEW: FETCH ALL VERIFIED ADMINS FOR BADGES ---
+app.get('/api/admins', async (req, res) => {
+    try {
+        const admins = await User.find({ $or: [{ role: 'admin' }, { isSuperAdmin: true }] }, 'username');
+        res.json(admins.map(u => u.username.toLowerCase()));
+    } catch (error) { res.status(500).json({ error: "Failed to fetch admins" }); }
+});
+
 app.get('/api/user/:username', async (req, res) => {
     try {
         const targetUser = await User.findOne({ username: { $regex: new RegExp(`^${req.params.username}$`, 'i') } }, '-password');
         if (!targetUser) return res.status(404).json({ error: "User not found" });
 
-        const threads = await Thread.find({ author: targetUser.username });
+        const userRegex = new RegExp(`^${targetUser.username}$`, 'i');
+        const threads = await Thread.find({ author: { $regex: userRegex } });
         const discussionCount = threads.length;
         
         let commentCount = 0;
         const allThreads = await Thread.find({});
         allThreads.forEach(t => {
             t.comments.forEach(c => {
-                if (c.author === targetUser.username) commentCount++;
+                if (c.author.toLowerCase() === targetUser.username.toLowerCase()) commentCount++;
                 c.replies.forEach(r => {
-                    if (r.author === targetUser.username) commentCount++;
+                    if (r.author.toLowerCase() === targetUser.username.toLowerCase()) commentCount++;
                 });
             });
         });
 
-        const articleCount = await Article.countDocuments({ author: targetUser.username, status: 'approved' }); 
+        const articleCount = await Article.countDocuments({ author: { $regex: userRegex }, status: 'approved' }); 
 
         res.json({
             user: targetUser,
@@ -184,6 +211,85 @@ app.get('/api/user/:username', async (req, res) => {
         });
     } catch (error) { res.status(500).json({ error: "Failed to fetch profile" }); }
 });
+
+app.get('/api/user/:username/activity', async (req, res) => {
+    try {
+        const username = req.params.username;
+        const articles = await Article.find({ author: { $regex: new RegExp(`^${username}$`, 'i') }, status: 'approved' }).sort({ createdAt: -1 });
+        const discussions = await Thread.find({ author: { $regex: new RegExp(`^${username}$`, 'i') } }).sort({ createdAt: -1 });
+        let comments = [];
+        const allThreads = await Thread.find({});
+        allThreads.forEach(t => {
+            t.comments.forEach(c => {
+                if (c.author.toLowerCase() === username.toLowerCase()) comments.push({ type: 'comment', threadId: t._id, threadTitle: t.title, commentId: c._id, text: c.text, createdAt: c.createdAt });
+                c.replies.forEach(r => {
+                    if (r.author.toLowerCase() === username.toLowerCase()) comments.push({ type: 'reply', threadId: t._id, threadTitle: t.title, commentId: c._id, replyId: r._id, text: r.text, createdAt: r.createdAt });
+                });
+            });
+        });
+        comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        res.json({ articles, discussions, comments });
+    } catch (error) { res.status(500).json({ error: "Failed to fetch activity" }); }
+});
+
+app.post('/api/user/request-admin', async (req, res) => {
+    try {
+        const { username, reason } = req.body;
+        const existing = await AdminRequest.findOne({ username: { $regex: new RegExp(`^${username}$`, 'i') }, status: 'pending' });
+        if (existing) return res.status(400).json({ error: "You already have a pending verification request." });
+
+        const newReq = new AdminRequest({ username, reason });
+        await newReq.save();
+        res.json({ message: "Verification request submitted successfully." });
+    } catch (err) { res.status(500).json({ error: "Server error" }); }
+});
+
+app.get('/api/admin/requests', async (req, res) => {
+    try {
+        const reqs = await AdminRequest.find({ status: 'pending' }).sort({ createdAt: -1 });
+        res.json(reqs);
+    } catch (err) { res.status(500).json({ error: "Server error" }); }
+});
+
+app.put('/api/admin/requests/:id', async (req, res) => {
+    try {
+        const { action } = req.body; 
+        const adminReq = await AdminRequest.findById(req.params.id);
+        if (!adminReq) return res.status(404).json({ error: "Request not found" });
+
+        adminReq.status = action === 'approve' ? 'approved' : 'rejected';
+        await adminReq.save();
+
+        if (action === 'approve') {
+            await User.findOneAndUpdate({ username: adminReq.username }, { role: 'admin' });
+            await createNotification(adminReq.username, "VerifEye Admin", "", "admin_approved", "null", "Your request to become an Admin has been approved! Please log out and log back in to access the dashboard.");
+        } else {
+            await createNotification(adminReq.username, "VerifEye Admin", "", "admin_rejected", "null", "Your request to become an Admin was declined. Keep contributing and try again later!");
+        }
+
+        res.json({ message: `Request ${action}d` });
+    } catch (err) { res.status(500).json({ error: "Server error" }); }
+});
+
+app.put('/api/admin/users/:username/revoke', async (req, res) => {
+    try {
+        const target = req.params.username;
+        const user = await User.findOne({ username: { $regex: new RegExp(`^${target}$`, 'i') } });
+        if (!user) return res.status(404).json({ error: "User not found" });
+        
+        if (user.isSuperAdmin) {
+            return res.status(403).json({ error: "Access Denied: You cannot revoke Super Admin privileges." });
+        }
+        
+        user.role = 'user';
+        await user.save();
+
+        await createNotification(user.username, "VerifEye Admin", "", "admin_revoked", "null", "Your Admin privileges have been revoked by the system administrators.");
+
+        res.json({ message: "Admin access revoked." });
+    } catch(err) { res.status(500).json({ error: "Server error" }); }
+});
+
 
 // --- GLOSSARY ROUTES ---
 app.get('/api/glossary', async (req, res) => {
@@ -219,7 +325,6 @@ app.delete('/api/admin/glossary/:id', async (req, res) => {
     } catch (error) { res.status(500).json({ error: "Failed to delete term" }); }
 });
 
-// --- ADMIN ROUTES (Users & Reports) ---
 app.get('/api/admin/users/search', async (req, res) => {
     try {
         const query = req.query.q;
@@ -267,7 +372,6 @@ app.delete('/api/admin/reports/:id', async (req, res) => {
     } catch (error) { res.status(500).json({ error: "Failed to dismiss report" }); }
 });
 
-// --- ARTICLE ROUTES ---
 app.post('/api/articles', async (req, res) => {
     try {
         const { title, author, authorPfp, category, thumbnail, sourceLink } = req.body;
@@ -316,7 +420,6 @@ app.delete('/api/admin/articles/:id', async (req, res) => {
     } catch (error) { res.status(500).json({ error: "Failed to delete article" }); }
 });
 
-// --- DISCUSSION & REPORTING ROUTES ---
 app.post('/api/reports', async (req, res) => {
     try {
         const { reporter, reportedUser, type, threadId, commentId, replyId, reason, details } = req.body;
@@ -487,10 +590,16 @@ app.post('/api/auth/signup', async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        const isTargetAdmin = ADMIN_NAMES.includes(req.body.username.toLowerCase());
+        const isTargetAdmin = SUPER_ADMINS.includes(req.body.username.toLowerCase());
         const userRole = isTargetAdmin ? 'admin' : 'user';
         
-        const newUser = new User({ username: req.body.username, email: req.body.email, password: hashedPassword, role: userRole });
+        const newUser = new User({ 
+            username: req.body.username, 
+            email: req.body.email, 
+            password: hashedPassword, 
+            role: userRole,
+            isSuperAdmin: isTargetAdmin 
+        });
         await newUser.save();
         res.status(201).json({ message: "Account created!" });
     } catch (error) { 
@@ -523,12 +632,14 @@ app.post('/api/auth/login', async (req, res) => {
         }
         
         if (req.body.loginType === 'admin') {
-            const isTargetAdmin = ADMIN_NAMES.includes(user.username.toLowerCase());
+            const isTargetAdmin = user.isSuperAdmin || SUPER_ADMINS.includes(user.username.toLowerCase());
+            
             if (user.role !== 'admin' && !isTargetAdmin) {
                 return res.status(403).json({ error: "Access denied. You are not an admin." });
             }
-            if (user.role !== 'admin' && isTargetAdmin) {
+            if (isTargetAdmin && (!user.isSuperAdmin || user.role !== 'admin')) {
                 user.role = 'admin';
+                user.isSuperAdmin = true;
                 await user.save();
             }
         }
@@ -539,38 +650,90 @@ app.post('/api/auth/login', async (req, res) => {
 
 app.put('/api/user/update-profile', async (req, res) => {
     try {
-        if (req.body.currentUsername.toLowerCase() !== req.body.newUsername.toLowerCase()) {
-            const existingUser = await User.findOne({ username: { $regex: new RegExp(`^${req.body.newUsername}$`, 'i') } });
+        const currentUsername = req.body.currentUsername;
+        const newUsername = req.body.newUsername;
+
+        if (currentUsername.toLowerCase() !== newUsername.toLowerCase()) {
+            const existingUser = await User.findOne({ username: { $regex: new RegExp(`^${newUsername}$`, 'i') } });
             if (existingUser) {
                 return res.status(400).json({ error: "Username is already taken. Please choose another one." });
             }
         }
 
-        const user = await User.findOne({ username: req.body.currentUsername });
-        user.username = req.body.newUsername;
+        const user = await User.findOne({ username: { $regex: new RegExp(`^${currentUsername}$`, 'i') } });
+        user.username = newUsername;
         user.pfp = req.body.pfp || "";
         user.bio = req.body.bio !== undefined ? req.body.bio : user.bio; 
         user.website = req.body.website !== undefined ? req.body.website : user.website; 
         await user.save();
         
+        const currentLower = currentUsername.toLowerCase();
+        const currentRegex = new RegExp(`^${currentUsername}$`, 'i');
+
         const threads = await Thread.find({});
         for (let t of threads) {
-            if (t.author === req.body.currentUsername) { t.author = user.username; t.authorPfp = user.pfp; }
-            t.reactions.forEach(r => { if(r.username === req.body.currentUsername) { r.username = user.username; r.userPfp = user.pfp; } });
+            let isModified = false;
+            
+            if (t.author.toLowerCase() === currentLower) { t.author = user.username; t.authorPfp = user.pfp; isModified = true; }
+            
+            t.reactions.forEach(r => { if(r.username.toLowerCase() === currentLower) { r.username = user.username; r.userPfp = user.pfp; isModified = true; } });
+            
             t.comments.forEach(c => {
-                if (c.author === req.body.currentUsername) { c.author = user.username; c.authorPfp = user.pfp; }
-                c.reactions.forEach(r => { if(r.username === req.body.currentUsername) { r.username = user.username; r.userPfp = user.pfp; } });
+                if (c.author.toLowerCase() === currentLower) { c.author = user.username; c.authorPfp = user.pfp; isModified = true; }
+                c.reactions.forEach(r => { if(r.username.toLowerCase() === currentLower) { r.username = user.username; r.userPfp = user.pfp; isModified = true; } });
                 c.replies.forEach(rep => {
-                    if (rep.author === req.body.currentUsername) { rep.author = user.username; rep.authorPfp = user.pfp; }
-                    rep.reactions.forEach(r => { if(r.username === req.body.currentUsername) { r.username = user.username; r.userPfp = user.pfp; } });
+                    if (rep.author.toLowerCase() === currentLower) { rep.author = user.username; rep.authorPfp = user.pfp; isModified = true; }
+                    rep.reactions.forEach(r => { if(r.username.toLowerCase() === currentLower) { r.username = user.username; r.userPfp = user.pfp; isModified = true; } });
                 });
             });
-            t.markModified('reactions'); t.markModified('comments');
-            await t.save();
+            
+            if (isModified) {
+                t.markModified('reactions'); t.markModified('comments');
+                await t.save();
+            }
         }
         
-        await Notification.updateMany({ sender: req.body.currentUsername }, { sender: user.username, senderPfp: user.pfp });
-        await Notification.updateMany({ recipient: req.body.currentUsername }, { recipient: user.username });
+        const articlesToUpdate = await Article.find({ author: currentRegex });
+        for (let a of articlesToUpdate) {
+            a.author = user.username;
+            a.authorPfp = user.pfp;
+            await a.save();
+        }
+        
+        const glossaryToUpdate = await Glossary.find({ author: currentRegex });
+        for (let g of glossaryToUpdate) {
+            g.author = user.username;
+            await g.save();
+        }
+        
+        const reqsToUpdate = await AdminRequest.find({ username: currentRegex });
+        for (let r of reqsToUpdate) {
+            r.username = user.username;
+            await r.save();
+        }
+
+        const notifsSender = await Notification.find({ sender: currentRegex });
+        for (let n of notifsSender) {
+            n.sender = user.username;
+            n.senderPfp = user.pfp;
+            await n.save();
+        }
+        const notifsRecipient = await Notification.find({ recipient: currentRegex });
+        for (let n of notifsRecipient) {
+            n.recipient = user.username;
+            await n.save();
+        }
+        
+        const reportsReporter = await Report.find({ reporter: currentRegex });
+        for (let r of reportsReporter) {
+            r.reporter = user.username;
+            await r.save();
+        }
+        const reportsReported = await Report.find({ reportedUser: currentRegex });
+        for (let r of reportsReported) {
+            r.reportedUser = user.username;
+            await r.save();
+        }
         
         res.json({ message: "Profile updated!", username: user.username });
     } catch (error) { 
@@ -584,29 +747,42 @@ app.put('/api/user/update-profile', async (req, res) => {
 app.delete('/api/user/:username', async (req, res) => {
     try {
         const usernameToDelete = req.params.username;
-        const deletedUser = await User.findOneAndDelete({ username: usernameToDelete });
+        const currentLower = usernameToDelete.toLowerCase();
+        const currentRegex = new RegExp(`^${usernameToDelete}$`, 'i');
+
+        const deletedUser = await User.findOneAndDelete({ username: currentRegex });
         if (!deletedUser) return res.status(404).json({ error: "User not found" });
         
-        await Notification.deleteMany({ recipient: usernameToDelete });
-        await Notification.updateMany({ sender: usernameToDelete }, { sender: "Deleted account", senderPfp: "" });
+        await Notification.deleteMany({ recipient: currentRegex });
+        await Report.deleteMany({ reporter: currentRegex }); 
+        await AdminRequest.deleteMany({ username: currentRegex });
+
+        const notifsSender = await Notification.find({ sender: currentRegex });
+        for (let n of notifsSender) { n.sender = "Deleted account"; n.senderPfp = ""; await n.save(); }
         
+        const articlesToUpdate = await Article.find({ author: currentRegex });
+        for (let a of articlesToUpdate) { a.author = "Deleted account"; a.authorPfp = ""; await a.save(); }
+        
+        const glossaryToUpdate = await Glossary.find({ author: currentRegex });
+        for (let g of glossaryToUpdate) { g.author = "Deleted account"; await g.save(); }
+
         const threads = await Thread.find({});
         for (let t of threads) {
             let isModified = false;
-            if (t.author === usernameToDelete) { t.author = "Deleted account"; t.authorPfp = ""; isModified = true; }
+            if (t.author.toLowerCase() === currentLower) { t.author = "Deleted account"; t.authorPfp = ""; isModified = true; }
             t.comments.forEach(c => {
-                if (c.author === usernameToDelete) { c.author = "Deleted account"; c.authorPfp = ""; c.text = "This person has deleted their account..."; c.image = ""; isModified = true; }
+                if (c.author.toLowerCase() === currentLower) { c.author = "Deleted account"; c.authorPfp = ""; c.text = "This person has deleted their account..."; c.image = ""; isModified = true; }
                 c.replies.forEach(rep => {
-                    if (rep.author === usernameToDelete) { rep.author = "Deleted account"; rep.authorPfp = ""; rep.text = "This person has deleted their account..."; rep.image = ""; isModified = true; }
+                    if (rep.author.toLowerCase() === currentLower) { rep.author = "Deleted account"; rep.authorPfp = ""; rep.text = "This person has deleted their account..."; rep.image = ""; isModified = true; }
                 });
-                const cReactIndex = c.reactions.findIndex(r => r.username === usernameToDelete);
+                const cReactIndex = c.reactions.findIndex(r => r.username.toLowerCase() === currentLower);
                 if (cReactIndex > -1) { c.reactions.splice(cReactIndex, 1); isModified = true; }
                 c.replies.forEach(rep => {
-                     const rReactIndex = rep.reactions.findIndex(r => r.username === usernameToDelete);
+                     const rReactIndex = rep.reactions.findIndex(r => r.username.toLowerCase() === currentLower);
                      if (rReactIndex > -1) { rep.reactions.splice(rReactIndex, 1); isModified = true; }
                 });
             });
-            const tReactIndex = t.reactions.findIndex(r => r.username === usernameToDelete);
+            const tReactIndex = t.reactions.findIndex(r => r.username.toLowerCase() === currentLower);
             if (tReactIndex > -1) { t.reactions.splice(tReactIndex, 1); isModified = true; }
             if (isModified) { t.markModified('comments'); t.markModified('reactions'); await t.save(); }
         }

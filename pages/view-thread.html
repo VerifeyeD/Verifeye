@@ -152,36 +152,10 @@
     <script src="../js/profile.js"></script>
 
     <script>
-        // Custom Alert Logic
-        window.showCustomAlert = function(title, message, type, onSuccessCallback = null) {
-            const overlay = document.getElementById('custom-alert-overlay');
-            const alertBox = document.getElementById('custom-alert-box');
-            const icon = document.getElementById('custom-alert-icon');
-            document.getElementById('custom-alert-title').innerText = title;
-            document.getElementById('custom-alert-message').innerText = message;
-            if (type === 'error') {
-                alertBox.className = 'custom-alert-box custom-alert-error';
-                icon.innerHTML = "<i class='bx bx-error-circle'></i>";
-            } else {
-                alertBox.className = 'custom-alert-box custom-alert-success';
-                icon.innerHTML = "<i class='bx bx-check-circle'></i>";
-            }
-            overlay.classList.add('show');
-            window.currentAlertCallback = onSuccessCallback;
-        };
-
-        window.closeCustomAlert = function() {
-            document.getElementById('custom-alert-overlay').classList.remove('show');
-            if (typeof window.currentAlertCallback === 'function') {
-                window.currentAlertCallback();
-                window.currentAlertCallback = null;
-            }
-        };
-
         // REPORT LOGIC
         function openReportModal(type, threadId, targetUser, commentId = null, replyId = null) {
             const loggedInUser = localStorage.getItem('verifeye_user');
-            if (!loggedInUser) { showCustomAlert("Access Denied", "You must be logged in to report content.", "error"); return; }
+            if (!loggedInUser) { window.showCustomAlert("Access Denied", "You must be logged in to report content.", "error"); return; }
             
             document.getElementById('report-type').value = type;
             document.getElementById('report-thread-id').value = threadId;
@@ -234,10 +208,10 @@
                 });
                 if (res.ok) { 
                     closeReportModal(); 
-                    showCustomAlert("Success", "Report submitted successfully. Admins will review it.", "success");
+                    window.showCustomAlert("Success", "Report submitted successfully. Admins will review it.", "success");
                 } 
-                else { showCustomAlert("Error", "Failed to submit report.", "error"); }
-            } catch (err) { showCustomAlert("Error", "Server error.", "error"); } 
+                else { window.showCustomAlert("Error", "Failed to submit report.", "error"); }
+            } catch (err) { window.showCustomAlert("Error", "Server error.", "error"); } 
             finally { btn.innerText = "Submit Report"; btn.disabled = false; }
         });
 
@@ -282,8 +256,9 @@
 
             let btnContent = '👍 Like';
             let btnColor = '#65676b';
+            
             if (currentType) {
-                btnContent = `${map[currentType].icon} ${map[currentType].text}`;
+                btnContent = `<span class="react-icon-small">${map[currentType].icon}</span> ${map[currentType].text}`;
                 btnColor = map[currentType].color;
             }
 
@@ -291,16 +266,18 @@
             let countDisplay = reactionsArray.length > 0 
                 ? `<div class="react-count-display" onclick="window.showReactList(${args})">${reactionsArray.length} <span style="font-size:10px; margin-left:3px;">►</span></div>` : '';
 
+            const reactTypes = ['like', 'love', 'haha', 'wow', 'sad', 'angry'];
+            let popupIconsHtml = '';
+            reactTypes.forEach(rt => {
+                const isActive = currentType === rt ? 'active-react' : '';
+                popupIconsHtml += `<span class="react-icon anim-${rt} ${isActive}" onclick="event.stopPropagation(); window.submitReact(${args}, '${rt}')">${map[rt].icon}</span>`;
+            });
+
             return `
                 <div class="reaction-wrapper">
-                    <button class="btn-text-action" style="color: ${btnColor}" onclick="window.submitReact(${args}, 'like')">${btnContent}</button>
+                    <button class="btn-text-action" style="color: ${btnColor}; display: flex; align-items: center; gap: 4px;" onclick="window.submitReact(${args}, 'like')">${btnContent}</button>
                     <div class="reaction-popup">
-                        <span class="react-icon" onclick="event.stopPropagation(); window.submitReact(${args}, 'like')">👍</span>
-                        <span class="react-icon" onclick="event.stopPropagation(); window.submitReact(${args}, 'love')">❤️</span>
-                        <span class="react-icon" onclick="event.stopPropagation(); window.submitReact(${args}, 'haha')">😂</span>
-                        <span class="react-icon" onclick="event.stopPropagation(); window.submitReact(${args}, 'wow')">😮</span>
-                        <span class="react-icon" onclick="event.stopPropagation(); window.submitReact(${args}, 'sad')">😢</span>
-                        <span class="react-icon" onclick="event.stopPropagation(); window.submitReact(${args}, 'angry')">😡</span>
+                        ${popupIconsHtml}
                     </div>
                     ${countDisplay}
                 </div>
@@ -331,6 +308,9 @@
                         ? `<img src="${react.userPfp}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">`
                         : `<div style="width: 40px; height: 40px; border-radius: 50%; background: #596272; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">${initial}</div>`;
 
+                    // --- ADDED: Verified Admin Badge to Reactions List! ---
+                    const badgeHTML = window.getBadgeHTML(react.username);
+
                     container.insertAdjacentHTML('beforeend', `
                         <div style="display: flex; align-items: center; padding: 10px 20px; transition: background 0.2s; cursor: default;" onmouseover="this.style.backgroundColor='#f9f9f9'" onmouseout="this.style.backgroundColor='transparent'">
                             <a href="../pages/user-profile.html?user=${react.username}" class="user-hover-link" data-username="${react.username}" style="display: flex; align-items: center; text-decoration: none;">
@@ -340,7 +320,7 @@
                                         ${map[react.type]}
                                     </div>
                                 </div>
-                                <span style="font-weight: 600; color: #333; font-size: 16px;">${react.username}</span>
+                                <span style="font-weight: 600; color: #333; font-size: 16px; display: flex; align-items: center;">${react.username} ${badgeHTML}</span>
                             </a>
                         </div>
                     `);
@@ -363,14 +343,14 @@
 
         window.saveEditComment = async function(cId) {
             const newText = document.getElementById(`edit-input-${cId}`).value.trim();
-            if (!newText) { showCustomAlert("Wait", "Comment cannot be empty!", "error"); return; }
+            if (!newText) { window.showCustomAlert("Wait", "Comment cannot be empty!", "error"); return; }
             try {
                 const res = await fetch(`http://localhost:3000/api/discussions/${threadId}/comments/${cId}`, {
                     method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text: newText})
                 });
-                if(!res.ok) { showCustomAlert("Error", "Failed to save comment! Please ensure your backend server was restarted.", "error"); return; }
+                if(!res.ok) { window.showCustomAlert("Error", "Failed to save comment! Please ensure your backend server was restarted.", "error"); return; }
                 window.fetchThread();
-            } catch (err) { showCustomAlert("Error", "Server error! Did you restart Node.js?", "error"); }
+            } catch (err) { window.showCustomAlert("Error", "Server error! Did you restart Node.js?", "error"); }
         }
 
         window.openEditReply = function(cId, rId) {
@@ -387,14 +367,14 @@
 
         window.saveEditReply = async function(cId, rId) {
             const newText = document.getElementById(`edit-input-${rId}`).value.trim();
-            if (!newText) { showCustomAlert("Wait", "Reply cannot be empty!", "error"); return; }
+            if (!newText) { window.showCustomAlert("Wait", "Reply cannot be empty!", "error"); return; }
             try {
                 const res = await fetch(`http://localhost:3000/api/discussions/${threadId}/comments/${cId}/replies/${rId}`, {
                     method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text: newText})
                 });
-                if(!res.ok) { showCustomAlert("Error", "Failed to save reply!", "error"); return; }
+                if(!res.ok) { window.showCustomAlert("Error", "Failed to save reply!", "error"); return; }
                 window.fetchThread();
-            } catch (err) { showCustomAlert("Error", "Server error!", "error"); }
+            } catch (err) { window.showCustomAlert("Error", "Server error!", "error"); }
         }
 
         let mainCommentBase64 = "";
@@ -431,6 +411,9 @@
         document.addEventListener('DOMContentLoaded', async () => {
             if (!threadId) { document.getElementById('loading-message').innerText = "Thread not found."; return; }
 
+            // --- WAIT FOR GLOBAL VERIFIED ADMINS TO LOAD ---
+            await window.verifiedAdminsPromise; 
+
             document.getElementById('cancel-delete').addEventListener('click', () => customDeleteModal.classList.remove('show'));
             
             document.getElementById('confirm-delete').addEventListener('click', async () => {
@@ -462,7 +445,7 @@
             window.submitReact = async function(targetType, cId, rId, reactType) {
                 const activeUser = localStorage.getItem('verifeye_user');
                 const activePfp = localStorage.getItem('verifeye_pfp') || ""; 
-                if (!activeUser) { showCustomAlert("Access Denied", "Please log in to react.", "error"); return; }
+                if (!activeUser) { window.showCustomAlert("Access Denied", "Please log in to react.", "error"); return; }
                 
                 let url = `http://localhost:3000/api/discussions/${threadId}/react`;
                 if (targetType === 'comment') url = `http://localhost:3000/api/discussions/${threadId}/comments/${cId}/react`;
@@ -502,7 +485,6 @@
                 
                 const avatar = currentThread.authorPfp ? `<img src="${currentThread.authorPfp}" class="vt-avatar">` : `<div class="vt-avatar-placeholder">${currentThread.author.charAt(0).toUpperCase()}</div>`;
                 
-                // Admin or Owner can delete thread
                 let actions = "";
                 if (currentThread.author === activeUser) {
                     actions += `<button id="edit-thread-btn" class="btn-edit">Edit</button>`;
@@ -519,11 +501,14 @@
                 
                 const threadEditedMark = currentThread.isEdited ? `<span style="font-size:12px; color:#888; font-style:italic; margin-left:8px;">(Edited)</span>` : "";
 
+                // --- ADDED: Verified Admin Badge to Thread Author! ---
+                const authorBadgeHTML = window.getBadgeHTML(currentThread.author);
+
                 document.querySelector('.vt-meta').innerHTML = `
                     <a href="../pages/user-profile.html?user=${currentThread.author}" class="user-hover-link" data-username="${currentThread.author}" style="display:flex; align-items:center; gap:15px;">
                         ${avatar}
                         <div class="vt-author-info">
-                            <span class="vt-author">${currentThread.author}</span>
+                            <span class="vt-author" style="display: flex; align-items: center;">${currentThread.author} ${authorBadgeHTML}</span>
                             <span class="vt-date">${timeAgo(currentThread.createdAt)}${threadEditedMark}</span>
                         </div>
                     </a>
@@ -539,6 +524,9 @@
                         const pfp = comment.authorPfp ? `<img src="${comment.authorPfp}" class="comment-avatar">` : `<div class="comment-avatar-placeholder">${comment.author.charAt(0).toUpperCase()}</div>`;
                         const commentImage = comment.image ? `<img src="${comment.image}" class="comment-attached-img" onclick="window.openLightbox(this.src)">` : "";
                         const cEdited = comment.isEdited ? `<span style="font-size:11px; color:#888; font-style:italic; margin-left:5px;">(Edited)</span>` : "";
+
+                        // --- ADDED: Verified Admin Badge to Comment Author! ---
+                        const commentBadgeHTML = window.getBadgeHTML(comment.author);
 
                         let cActionsHtml = `<div style="margin-left: auto; display: flex; gap: 8px;">`;
                         
@@ -573,6 +561,9 @@
                                 const replyImage = reply.image ? `<img src="${reply.image}" class="comment-attached-img" style="max-width: 200px;" onclick="window.openLightbox(this.src)">` : "";
                                 const rEdited = reply.isEdited ? `<span style="font-size:11px; color:#888; font-style:italic; margin-left:5px;">(Edited)</span>` : "";
 
+                                // --- ADDED: Verified Admin Badge to Reply Author! ---
+                                const replyBadgeHTML = window.getBadgeHTML(reply.author);
+
                                 let rActionsHtml = `<div style="margin-left: auto; display: flex; gap: 8px;">`;
                                 
                                 if (activeUser && activeUser !== reply.author) {
@@ -598,12 +589,11 @@
                                 }
                                 rActionsHtml += `</div>`;
 
-                                // ADDED ID TO REPLY
                                 repliesHtml += `
                                     <div class="reply-item" id="reply-${reply._id}">
                                         <div class="comment-meta">
                                             <a href="../pages/user-profile.html?user=${reply.author}" class="user-hover-link" data-username="${reply.author}" style="display:flex; align-items:center; gap:8px;">
-                                                ${rpfp} <span class="comment-author">${reply.author}</span> 
+                                                ${rpfp} <span class="comment-author" style="display: flex; align-items: center;">${reply.author} ${replyBadgeHTML}</span> 
                                             </a>
                                             <span class="comment-date" style="margin-left: 5px;">${timeAgo(reply.createdAt)}${rEdited}</span> 
                                             ${rActionsHtml}
@@ -619,12 +609,11 @@
                             repliesHtml += `</div>`;
                         }
 
-                        // ADDED ID TO COMMENT
                         commentList.insertAdjacentHTML('beforeend', `
                             <div class="comment-item" id="comment-${comment._id}">
                                 <div class="comment-meta">
                                     <a href="../pages/user-profile.html?user=${comment.author}" class="user-hover-link" data-username="${comment.author}" style="display:flex; align-items:center; gap:8px;">
-                                        ${pfp} <span class="comment-author">${comment.author}</span>
+                                        ${pfp} <span class="comment-author" style="display: flex; align-items: center;">${comment.author} ${commentBadgeHTML}</span>
                                     </a>
                                     <span class="comment-date" style="margin-left: 5px;">${timeAgo(comment.createdAt)}${cEdited}</span> 
                                     ${cActionsHtml}
@@ -678,13 +667,11 @@
                     };
                 }
 
-                // DEEP LINK LOGIC FOR REPORT HIGHLIGHTING
                 setTimeout(() => {
                     const hash = window.location.hash;
                     if (hash) {
                         const targetEl = document.querySelector(hash);
                         if (targetEl) {
-                            // Adding a slight offset because of the sticky header
                             const headerOffset = 100;
                             const elementPosition = targetEl.getBoundingClientRect().top;
                             const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
@@ -693,7 +680,7 @@
                             targetEl.classList.add('highlight-target');
                         }
                     }
-                }, 300); // 300ms delay to ensure images/fonts are painted
+                }, 300);
             };
 
             document.getElementById('submit-comment-btn').onclick = async () => {
@@ -701,7 +688,7 @@
                 const pfp = localStorage.getItem('verifeye_pfp');
                 const text = document.getElementById('main-comment-input').value.trim();
                 if(!text && !mainCommentBase64) return;
-                if(!activeUser) { showCustomAlert("Access Denied", "You must be logged in to comment.", "error"); return; }
+                if(!activeUser) { window.showCustomAlert("Access Denied", "You must be logged in to comment.", "error"); return; }
                 
                 await fetch(`http://localhost:3000/api/discussions/${threadId}/comments`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -718,7 +705,7 @@
                 const text = document.getElementById(`reply-input-${commentId}`).value.trim();
                 const image = window.activeReplyImages[commentId] || "";
                 if(!text && !image) return;
-                if(!activeUser) { showCustomAlert("Access Denied", "You must be logged in to reply.", "error"); return; }
+                if(!activeUser) { window.showCustomAlert("Access Denied", "You must be logged in to reply.", "error"); return; }
 
                 await fetch(`http://localhost:3000/api/discussions/${threadId}/comments/${commentId}/replies`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -736,10 +723,10 @@
                     const res = await fetch(`http://localhost:3000/api/discussions/${threadId}`, {
                         method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ title, content })
                     });
-                    if(!res.ok) { showCustomAlert("Error", "Failed to edit thread! Did you restart the server?", "error"); return; }
+                    if(!res.ok) { window.showCustomAlert("Error", "Failed to edit thread! Did you restart the server?", "error"); return; }
                     window.location.reload();
                 } catch(e) {
-                    showCustomAlert("Error", "Server error!", "error");
+                    window.showCustomAlert("Error", "Server error!", "error");
                 }
             };
 

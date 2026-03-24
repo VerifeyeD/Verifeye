@@ -650,3 +650,120 @@ footer .copyright {
     flex: 1;
     margin-top: 0; 
 }
+
+/* --- OVERWRITE THE EXISTING 'nav ul li a' BLOCK WITH THIS --- */
+nav ul li a {
+    text-decoration: none;
+    color: #333; 
+    transition: 0.3s;
+    position: relative;
+    padding-bottom: 4px;
+}
+
+nav ul li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #06629b;
+    transition: width 0.3s ease;
+}
+
+nav ul li a.active::after, 
+nav ul li a:hover::after {
+    width: 100%;
+}
+
+nav ul li a.active, nav ul li a:hover {
+    color: #06629b;
+}
+
+/* --- OVERWRITE THE EXISTING 'main' BLOCK WITH THIS --- */
+main {
+    flex: 1; 
+    /* YOUR EXISTING MAIN STYLES GO HERE (e.g., display: flex, padding, etc.) */
+    
+    /* ADD THESE TWO LINES FOR THE ANIMATION */
+    opacity: 0;
+    animation: pageFadeInUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+/* ADD THIS KEYFRAME ANYWHERE IN THE CSS FILE */
+@keyframes pageFadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Hahmlet', serif; }
+body { background-color: #f4f7f9; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+a { text-decoration: none; color: inherit; }
+
+header { width: 100%; padding: 0 10%; background-color: #fff; position: sticky; top: 0; z-index: 99999; border-bottom: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+.logo { display: flex; align-items: center; height: 15px; }
+.logo img { width: 60px; }
+.logoname { font-size: 25px; color: #333; }
+nav ul { display: flex; list-style: none; }
+nav ul li { margin: 0 20px; }
+nav ul li a { color: #333; transition: 0.3s; position: relative; padding-bottom: 4px; }
+nav ul li a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: 0; left: 0; background-color: #06629b; transition: width 0.3s ease; }
+nav ul li a.active::after, nav ul li a:hover::after { width: 100%; }
+nav ul li a.active, nav ul li a:hover { color: #06629b; }
+.header-line { border: none; border-top: 1px solid #eee; }
+
+main { flex: 1; opacity: 0; animation: pageFadeInUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards; }
+@keyframes pageFadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+
+.articles-header { text-align: center; margin-bottom: 40px; }
+.articles-title { font-size: 48px; font-weight: 700; color: #000; margin-bottom: 10px; }
+.articles-subtitle { font-size: 16px; color: #666; margin-bottom: 30px; }
+
+.search-section { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+.search-input-wrapper { position: relative; width: 100%; max-width: 600px; }
+.search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: #555; pointer-events: none; }
+.search-input-wrapper input { width: 100%; padding: 15px 20px 15px 45px; font-size: 16px; border: 2px solid #ccc; border-radius: 30px; outline: none; transition: 0.3s; }
+.search-input-wrapper input:focus { border-color: #0F3047; box-shadow: 0 4px 15px rgba(15, 48, 71, 0.1); }
+
+.post-article-btn { padding: 15px 30px; background-color: #0F3047; color: #fff; border: none; border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; white-space: nowrap; }
+.post-article-btn:hover { background-color: #06629b; transform: scale(1.05); }
+
+.filter-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 40px; flex-wrap: wrap; }
+.filter-btn { background: #fff; border: 1px solid #ccc; color: #555; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.filter-btn:hover { background: #eaf4fc; border-color: #06629b; color: #06629b; }
+.filter-btn.active { background: #06629b; color: #fff; border-color: #06629b; }
+
+/* --- GRID LAYOUT --- */
+.articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+
+.article-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; cursor: pointer; }
+.article-card:hover { transform: translateY(-8px); box-shadow: 0 12px 25px rgba(0,0,0,0.1); border-color: #06629b; }
+
+.article-thumb { width: 100%; height: 180px; background: #eee; overflow: hidden; position: relative; }
+.article-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+.article-card:hover .article-thumb img { transform: scale(1.05); }
+
+.article-badge { position: absolute; top: 15px; left: 15px; background: rgba(6, 98, 155, 0.9); color: #fff; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; backdrop-filter: blur(4px); }
+
+.article-content { padding: 25px; flex: 1; display: flex; flex-direction: column; }
+.article-title { font-size: 20px; font-weight: 700; color: #0F3047; margin-bottom: 15px; line-height: 1.4; }
+
+.article-footer { margin-top: auto; padding-top: 15px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #666; }
+.article-author { color: #06629b; }
+.article-date { color: #999; }
+
+.slide-down-item { opacity: 0; animation: slideDown 0.4s ease-out forwards; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+footer { background-color: #EAF4FC; padding: 50px 50px 20px 50px; margin-top: 100px; }
+.footer-content { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto; gap: 40px; }
+.footer-col { flex: 1; }
+.footer-col h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; color: #000; }
+.footer-col p { font-size: 0.95rem; line-height: 1.5; color: #444; }
+.link-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; margin-bottom: 20px; }
+.link-grid a { text-decoration: none; color: #444; font-size: 0.95rem; }
+.link-grid a:hover { color: #06629b; }
+.copyright { text-align: center; font-size: 0.75rem; color: #666; margin-top: 35px; width: 100%; }

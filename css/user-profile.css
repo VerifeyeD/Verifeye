@@ -1,209 +1,233 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Hahmlet', serif;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Hahmlet', serif; }
+body { background-color: #f4f7f9; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+a { text-decoration: none; color: inherit; }
 
-body {
-    background-color: #f4f7f9;
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-/* --- HEADER & NAVIGATION --- */
-header { 
-    width: 100%; 
-    padding: 0 10%; 
-    background-color: #fff; 
-    position: sticky;
-    top: 0;
-    z-index: 99999; 
-    border-bottom: 1px solid #eee;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-}
-
+header { width: 100%; padding: 0 10%; background-color: #fff; position: sticky; top: 0; z-index: 99999; border-bottom: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
 .logo { display: flex; align-items: center; height: 15px; }
 .logo img { width: 60px; }
 .logoname { font-size: 25px; color: #333; }
 nav ul { display: flex; list-style: none; }
 nav ul li { margin: 0 20px; }
-nav ul li a { text-decoration: none; color: #333; transition: 0.3s; }
+
+/* ANIMATED NAV LINKS */
+nav ul li a { text-decoration: none; color: #333; transition: 0.3s; position: relative; padding-bottom: 4px; }
+nav ul li a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: 0; left: 0; background-color: #06629b; transition: width 0.3s ease; }
+nav ul li a.active::after, nav ul li a:hover::after { width: 100%; }
 nav ul li a.active, nav ul li a:hover { color: #06629b; }
 .header-line { border: none; border-top: 1px solid #eee; }
 
-.container {
-    width: 95%;
-    max-width: 1100px;
-    margin: 50px auto;
-    padding: 0 20px;
+/* PAGE LOAD ANIMATION */
+.profile-main {
     flex: 1;
+    padding: 40px 20px;
+    opacity: 0;
+    animation: pageFadeInUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
 }
 
-/* PROFILE LAYOUT GRID */
-.profile-layout {
-    display: grid;
-    grid-template-columns: 300px 1fr;
+@keyframes pageFadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-container-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
     gap: 40px;
+    align-items: flex-start;
 }
 
-/* SIDEBAR (Basic Info) */
-.profile-sidebar {
+@media (max-width: 768px) {
+    .profile-container-inner { flex-direction: column; }
+}
+
+/* --- LEFT SIDE: PROFILE CARD --- */
+.profile-card {
     background: #fff;
-    padding: 40px 30px;
-    border-radius: 12px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-    text-align: center;
     border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 40px 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    text-align: center;
+    flex: 1;
+    min-width: 300px;
 }
 
-.profile-avatar-large {
+.profile-avatar {
     width: 150px;
     height: 150px;
-    margin: 0 auto 20px;
     border-radius: 50%;
-    overflow: hidden;
-    background: #ececec;
-    border: 4px solid #fff;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.profile-avatar-large img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.avatar-placeholder {
-    width: 100%;
-    height: 100%;
-    background: #596272;
+    background-color: #596272;
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 60px;
     font-weight: 700;
+    margin: 0 auto 20px;
+    border: 4px solid #eaf4fc;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- THE FIX: PERFECT BADGE ALIGNMENT --- */
 .profile-username {
-    font-size: 24px;
+    font-size: 28px;
     color: #0F3047;
-    margin-bottom: 15px;
-}
-
-.profile-bio {
-    font-size: 14px;
-    color: #555;
-    line-height: 1.6;
-    margin-bottom: 25px;
-    font-style: italic;
-}
-
-.profile-detail-item {
+    margin-bottom: 5px;
+    /* Forces the text and the badge to perfectly center horizontally and vertically */
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    color: #666;
+    gap: 6px; /* Tightens the gap between the name and badge */
+}
+
+/* Makes the badge bigger ONLY on the profile page */
+.profile-username .verified-badge {
+    width: 26px;
+    height: 26px;
+    margin: 0; /* Removes global margins */
+}
+
+.profile-role-badge {
+    display: inline-block;
+    background: #eaf4fc;
+    color: #06629b;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+
+.profile-bio {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.profile-website {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #06629b;
+    font-weight: 600;
     font-size: 14px;
-    margin-bottom: 10px;
-}
-
-.profile-detail-item svg {
-    width: 16px;
-    height: 16px;
-    color: #06629b;
-}
-
-.profile-detail-item a {
-    color: #06629b;
-    text-decoration: none;
+    margin-bottom: 20px;
     transition: 0.2s;
 }
 
-.profile-detail-item a:hover {
+.profile-website:hover {
     text-decoration: underline;
 }
 
-/* NEW: Edit Profile Button styling */
-.btn-profile-page-edit {
-    margin-top: 25px;
+.profile-joindate {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 25px;
+}
+
+.btn-edit-profile {
     width: 100%;
     padding: 12px;
-    background-color: #0F3047;
+    background: #0F3047;
     color: #fff;
     border: none;
     border-radius: 8px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: 0.2s;
+    font-family: inherit;
 }
 
-.btn-profile-page-edit:hover {
-    background-color: #06629b;
+.btn-edit-profile:hover {
+    background: #06629b;
 }
 
-/* MAIN AREA (Stats) */
-.profile-main {
-    padding-top: 10px;
+/* --- RIGHT SIDE: CONTRIBUTION SUMMARY --- */
+.contribution-section {
+    flex: 2;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
-.section-title {
-    font-size: 22px;
+.contribution-section h2 {
+    font-size: 26px;
     color: #0F3047;
-    margin-bottom: 25px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #eee;
+    margin-bottom: 5px;
+}
+
+.section-desc {
+    color: #888;
+    font-size: 15px;
+    margin-bottom: 30px;
+    font-style: italic;
 }
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 20px;
 }
 
-.stat-card {
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
+.stat-box {
+    background: #f9fbfd;
+    border: 2px solid #eaf4fc;
+    border-radius: 10px;
+    padding: 30px 20px;
     text-align: center;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-    transition: transform 0.2s;
+    cursor: pointer; 
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
 }
 
-.stat-card:hover {
-    transform: translateY(-5px);
+.stat-box:hover {
+    transform: translateY(-8px);
+    border-color: #06629b;
+    box-shadow: 0 10px 20px rgba(6, 98, 155, 0.15);
+    background: #fff;
 }
 
-.stat-number {
-    font-size: 40px;
-    font-weight: 700;
+.stat-box h3 {
+    font-size: 36px;
     color: #06629b;
     margin-bottom: 5px;
-    line-height: 1;
+    font-weight: 800;
+    transition: transform 0.3s;
 }
 
-.stat-label {
+.stat-box:hover h3 {
+    transform: scale(1.1);
+}
+
+.stat-box p {
+    color: #555;
     font-size: 14px;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
     font-weight: 600;
 }
 
-/* FOOTER */
+/* --- FOOTER --- */
 footer { background-color: #EAF4FC; padding: 50px 50px 20px 50px; margin-top: 100px; }
 .footer-content { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto; gap: 40px; }
 .footer-col { flex: 1; }
 .footer-col h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; color: #000; }
 .footer-col p { font-size: 0.95rem; line-height: 1.5; color: #444; }
 .link-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; margin-bottom: 20px; }
-.link-grid a { text-decoration: none; color: #444; font-size: 0.95rem; }
+.link-grid a { color: #444; font-size: 0.95rem; }
 .link-grid a:hover { color: #06629b; }
 .copyright { text-align: center; font-size: 0.75rem; color: #666; margin-top: 35px; width: 100%; }

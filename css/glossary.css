@@ -417,3 +417,47 @@ footer .copyright {
 .btn-cancel { flex: 1; padding: 14px; background: #ccc; color: #333; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; }
 .btn-cancel:hover { background: #bbb; }
 #apply-crop { flex: 1; margin-top: 0; }
+/* --- OVERWRITE THE EXISTING 'nav ul li a' BLOCK WITH THIS --- */
+nav ul li a {
+    text-decoration: none;
+    color: #333; 
+    transition: 0.3s;
+    position: relative;
+    padding-bottom: 4px;
+}
+
+nav ul li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #06629b;
+    transition: width 0.3s ease;
+}
+
+nav ul li a.active::after, 
+nav ul li a:hover::after {
+    width: 100%;
+}
+
+nav ul li a.active, nav ul li a:hover {
+    color: #06629b;
+}
+
+/* --- OVERWRITE THE EXISTING 'main' BLOCK WITH THIS --- */
+main {
+    flex: 1; 
+    /* YOUR EXISTING MAIN STYLES GO HERE (e.g., display: flex, padding, etc.) */
+    
+    /* ADD THESE TWO LINES FOR THE ANIMATION */
+    opacity: 0;
+    animation: pageFadeInUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+/* ADD THIS KEYFRAME ANYWHERE IN THE CSS FILE */
+@keyframes pageFadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

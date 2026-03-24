@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VerifEye | User Activity</title>
+    
+    <link rel="stylesheet" href="../css/user-activity.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="../pages/homepage.html" class="logo">
+                <img src="../assets/images/logo.png" alt="VerifEye">
+                <h2><div class="logoname">VerifEye</div></h2> 
+            </a>
+            <ul>
+                <li><a href="../pages/homepage.html">Home</a></li>
+                <li><a href="../pages/article.html">Article</a></li>
+                <li><a href="../pages/glossary.html">Glossary</a></li>
+                <li><a href="../pages/selfassessment.html">Self-assessment</a></li>
+                <li><a href="../pages/Discussions.html">Discussions</a></li>
+            </ul>
+            <div id="auth-status"></div>
+        </nav>
+    </header>
+    <hr class="header-line">
+
+    <main class="activity-container">
+        <div class="page-header">
+            <a href="javascript:history.back()" class="back-link">
+                <i class='bx bx-arrow-back'></i> Back to Profile
+            </a>
+        </div>
+
+        <div class="activity-header">
+            <h1 id="activity-title">User's Activity</h1>
+            <p>A detailed log of community contributions.</p>
+        </div>
+
+        <div class="dashboard-tabs">
+            <button class="tab-btn active" data-target="articles">Articles Submitted</button>
+            <button class="tab-btn" data-target="discussions">Discussions Started</button>
+            <button class="tab-btn" data-target="comments">Comments Written</button>
+        </div>
+
+        <div id="loading-spinner" style="text-align: center; padding: 40px; color: #666;">Loading activity...</div>
+
+        <div id="activity-content" class="activity-content-area" style="display: none;"></div>
+        
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col brand-col">
+                <h3>VerifEye</h3>
+                <p>Verify the truth. From AI insight to deception detection, we keep your eye on what’s real.</p>
+            </div>
+            <div class="footer-col links-col">
+                <h3>Resources</h3>
+                <div class="link-grid">
+                    <a href="../pages/Article.html">Article</a>
+                    <a href="../pages/glossary.html">Glossary</a>
+                    <a href="../pages/selfassessment.html">Self-Assessment</a>
+                    <a href="../pages/Discussions.html">Discussions</a>
+                </div>
+                <p class="copyright">© VerifEye 2026. Fighting misinformation through education.</p>
+            </div>
+            <div class="footer-col about-col">
+                <h3>About</h3>
+                <p>Our mission is to promote digital literacy and help users identify AI manipulated media.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/profile.js"></script>
+    <script src="../js/user-activity.js"></script>
+</body>
+</html>

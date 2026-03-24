@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VerifEye | Articles</title>
     
-    <link rel="stylesheet" href="../css/Article.css">
+    <link rel="stylesheet" href="../css/article.css">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
 
@@ -28,49 +27,55 @@
                 <li><a href="../pages/selfassessment.html">Self-assessment</a></li>
                 <li><a href="../pages/Discussions.html">Discussions</a></li>
             </ul>
-            
             <div id="auth-status"></div>
         </nav>
     </header>
+    <hr class="header-line">
 
     <main>
-        <div class="articles-container">
+        <div class="container">
             <div class="articles-header">
-                <h1>Articles</h1>
-                <p class="subtitle">Educational articles that explain deepfakes, AI media, and how to spot misinformation</p>
+                <h1 class="articles-title">Library</h1>
+                <p class="articles-subtitle">Explore educational articles on spotting deepfakes, submitted by the community.</p>
                 
                 <div class="search-section">
                     <div class="search-input-wrapper">
                         <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                        <input type="text" placeholder="Search articles..." id="article-search">
+                        <input type="text" id="article-search-input" placeholder="Search by title or author...">
                     </div>
-                    <button class="btn-search" id="btn-search">Search</button>
-                    <a href="../pages/upload-article.html" class="post-thread-btn" id="upload-article-btn" style="margin-left: 15px; background-color: #06629b; text-decoration: none; padding: 12px 25px; border-radius: 25px; color: white; font-weight: 600;">Upload Article</a>
+                    <a href="../pages/upload-article.html" class="post-article-btn" id="upload-article-link">Submit Article</a>
                 </div>
-
-                <div class="filter-section">
-                    <div class="filter-label">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="filter-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                        </svg>
-                        <strong>Filter by category</strong>
-                    </div>
-                    <div class="filter-buttons">
-                        <button class="filter-btn active" data-filter="all">ALL</button>
-                        <button class="filter-btn" data-filter="videos">VIDEOS</button>
-                        <button class="filter-btn" data-filter="images">IMAGES</button>
-                        <button class="filter-btn" data-filter="audio">AUDIO</button>
-                    </div>
+                
+                <div class="filter-tabs">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="images">Images</button>
+                    <button class="filter-btn" data-filter="videos">Videos</button>
+                    <button class="filter-btn" data-filter="audio">Audio</button>
                 </div>
             </div>
 
-            <div class="article-grid" id="article-grid">
-                <div style="grid-column: 1/-1; text-align: center; color: #888; padding: 40px;">Loading articles...</div>
+            <div id="loading-spinner" style="text-align: center; padding: 40px; color: #666;">Loading library...</div>
+
+            <div class="articles-grid" id="articles-grid" style="display: none;">
+                </div>
+            
+            <div id="no-results-msg" style="display: none; text-align: center; padding: 40px; color: #888;">
+                No articles matched your search.
             </div>
+
         </div>
     </main>
+
+    <div id="custom-alert-overlay" class="custom-alert-overlay">
+        <div class="custom-alert-box" id="custom-alert-box">
+            <div class="custom-alert-icon" id="custom-alert-icon"></div>
+            <h2 class="custom-alert-title" id="custom-alert-title"></h2>
+            <p class="custom-alert-message" id="custom-alert-message"></p>
+            <button class="custom-alert-btn" onclick="closeCustomAlert()">OK</button>
+        </div>
+    </div>
 
     <footer>
         <div class="footer-content">
@@ -78,20 +83,16 @@
                 <h3>VerifEye</h3>
                 <p>Verify the truth. From AI insight to deception detection, we keep your eye on what’s real.</p>
             </div>
-
             <div class="footer-col links-col">
                 <h3>Resources</h3>
                 <div class="link-grid">
-                    <a href="../pages/article.html">Article</a>
-                    <a href="#">Image Deepfakes</a>
+                    <a href="../pages/Article.html">Article</a>
                     <a href="../pages/glossary.html">Glossary</a>
-                    <a href="#">Audio Deepfakes</a>
                     <a href="../pages/selfassessment.html">Self-Assessment</a>
-                    <a href="#">Video Deepfakes</a>
+                    <a href="../pages/Discussions.html">Discussions</a>
                 </div>
                 <p class="copyright">© VerifEye 2026. Fighting misinformation through education.</p>
             </div>
-
             <div class="footer-col about-col">
                 <h3>About</h3>
                 <p>Our mission is to promote digital literacy and help users identify AI manipulated media.</p>
@@ -99,7 +100,7 @@
         </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="../js/profile.js"></script>
-    <script src="../js/article-list.js"></script> </body>
+    <script src="../js/article.js"></script>
+</body>
 </html>

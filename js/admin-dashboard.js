@@ -1,10 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     
     const loggedInUser = localStorage.getItem('verifeye_user');
     const loggedInRole = localStorage.getItem('verifeye_role');
 
     if (!loggedInUser || loggedInRole !== 'admin') {
-        alert("Access Denied: You must be an administrator to view this page.");
         window.location.href = '../pages/homepage.html';
         return;
     }
@@ -13,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const userContainer = document.getElementById('user-management');
     const reportsContainer = document.getElementById('reported-content');
     const reportsList = document.getElementById('reports-list');
+    const adminRequestsContainer = document.getElementById('admin-requests');
+    const adminRequestsList = document.getElementById('admin-requests-list');
     const loadingSpinner = document.getElementById('loading-spinner');
     
     const articleSearchContainer = document.getElementById('article-search-container');
@@ -135,6 +136,96 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
+    // ADMIN REQUESTS LOGIC
+    // ==========================================
+    async function fetchAdminRequests() {
+        try {
+            loadingSpinner.style.display = 'block';
+            queueContainer.style.display = 'none';
+            userContainer.style.display = 'none';
+            reportsContainer.style.display = 'none';
+            adminRequestsContainer.style.display = 'none';
+
+            const response = await fetch('http://localhost:3000/api/admin/requests');
+            if (response.ok) {
+                const reqs = await response.json();
+                renderAdminRequests(reqs);
+            } else {
+                adminRequestsList.innerHTML = '<p style="color:red; text-align:center;">Failed to load requests.</p>';
+            }
+        } catch (err) {
+            adminRequestsList.innerHTML = '<p style="color:red; text-align:center;">Server error.</p>';
+        } finally {
+            loadingSpinner.style.display = 'none';
+            if (currentFilter === 'admin-requests') adminRequestsContainer.style.display = 'flex';
+        }
+    }
+
+    function renderAdminRequests(reqs) {
+        adminRequestsList.innerHTML = '';
+        if (reqs.length === 0) {
+            adminRequestsList.innerHTML = `<div style="text-align: center; padding: 40px; color: #888; background: #fff; border-radius: 8px; border: 1px solid #ddd;">No pending admin requests.</div>`;
+            return;
+        }
+
+        reqs.forEach((r, index) => {
+            const animationDelay = index * 0.1;
+            const dateStr = new Date(r.createdAt).toLocaleString();
+            
+            const html = `
+                <div class="report-item slide-down-item" style="animation-delay: ${animationDelay}s; cursor: default;">
+                    <div class="report-details">
+                        <span class="report-badge" style="background:#eaf4fc; color:#06629b;">Admin Request</span>
+                        <div style="font-size:16px; color:#333; margin-bottom: 5px;">
+                            <strong style="display:flex; align-items:center;">${r.username} ${window.getBadgeHTML(r.username)}</strong> is applying to be an Admin.
+                        </div>
+                        <div style="font-size:14px; color:#555; background:#f9fbfd; padding: 12px; border-left: 3px solid #06629b; border-radius: 4px;">
+                            <strong>Reason:</strong> "${r.reason}"
+                        </div>
+                        <div style="font-size:12px; color:#888; margin-top:8px;">Requested on: ${dateStr}</div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <button class="btn-approve" onclick="handleAdminRequest('${r._id}', 'approve')">Grant Admin</button>
+                        <button class="btn-reject" onclick="handleAdminRequest('${r._id}', 'reject')">Reject</button>
+                    </div>
+                </div>
+            `;
+            adminRequestsList.insertAdjacentHTML('beforeend', html);
+        });
+    }
+
+    window.handleAdminRequest = async function(id, action) {
+        const actionText = action === 'approve' ? 'Grant Admin Privileges' : 'Reject Request';
+        const color = action === 'approve' ? '#27ae60' : '#e74c3c';
+        
+        const confirmed = await customConfirm("Confirm Decision", `Are you sure you want to ${action} this request?`, actionText, color);
+        if (!confirmed) return;
+
+        try {
+            const res = await fetch(`http://localhost:3000/api/admin/requests/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: action })
+            });
+
+            if (res.ok) {
+                showCustomAlert("Success", `Request ${action}d successfully.`, "success");
+                
+                // If we granted admin, refresh the global badge list in the background!
+                if (action === 'approve') {
+                    window.verifiedAdminsPromise = fetch('http://localhost:3000/api/admins')
+                        .then(r => r.json())
+                        .then(data => { window.verifiedAdmins = data; });
+                }
+                
+                fetchAdminRequests();
+            } else {
+                showCustomAlert("Error", `Failed to ${action} request.`, "error");
+            }
+        } catch (err) { showCustomAlert("Error", "Server error", "error"); }
+    };
+
+    // ==========================================
     // REPORTS LOGIC
     // ==========================================
     async function fetchReports() {
@@ -143,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             queueContainer.style.display = 'none';
             userContainer.style.display = 'none';
             reportsContainer.style.display = 'none';
+            adminRequestsContainer.style.display = 'none';
 
             const response = await fetch('http://localhost:3000/api/admin/reports');
             if (response.ok) {
@@ -197,11 +289,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const res = await fetch(`http://localhost:3000/api/admin/reports/${reportId}`, { method: 'DELETE' });
-            if (res.ok) {
-                fetchReports();
-            } else {
-                showCustomAlert("Error", "Failed to dismiss report.", "error");
-            }
+            if (res.ok) fetchReports();
+            else showCustomAlert("Error", "Failed to dismiss report.", "error");
         } catch (err) { showCustomAlert("Error", "Server error", "error"); }
     };
 
@@ -214,6 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
             queueContainer.style.display = 'none';
             userContainer.style.display = 'none';
             reportsContainer.style.display = 'none';
+            adminRequestsContainer.style.display = 'none';
             
             const response = await fetch('http://localhost:3000/api/admin/articles');
             if (response.ok) {
@@ -225,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
             queueContainer.innerHTML = '<p style="color:red; text-align:center;">Server error. Is Node running?</p>';
         } finally {
             loadingSpinner.style.display = 'none';
-            if (currentFilter !== 'users' && currentFilter !== 'reports') queueContainer.style.display = 'flex';
+            if (currentFilter !== 'users' && currentFilter !== 'reports' && currentFilter !== 'admin-requests') queueContainer.style.display = 'flex';
         }
     }
 
@@ -297,6 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
             articleSearchContainer.style.display = 'none';
             queueContainer.style.display = 'none';
             reportsContainer.style.display = 'none';
+            adminRequestsContainer.style.display = 'none';
 
             if (currentFilter === 'users') {
                 userContainer.style.display = 'block';
@@ -305,6 +396,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 reportsContainer.style.display = 'flex';
                 fetchReports();
                 triggerAnimation(reportsContainer);
+            } else if (currentFilter === 'admin-requests') {
+                adminRequestsContainer.style.display = 'flex';
+                fetchAdminRequests();
+                triggerAnimation(adminRequestsContainer);
             } else {
                 if (currentFilter === 'approved') {
                     articleSearchContainer.style.display = 'flex';
@@ -378,29 +473,68 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     });
 
-    function renderUserCards(users) {
+    async function renderUserCards(users) {
         if (!users || users.length === 0) {
             searchResults.innerHTML = `<p style="text-align: center; color: #e74c3c; padding: 20px;">No users found matching that name.</p>`;
             return;
         }
+
+        // Make sure we have the latest badges before rendering!
+        await window.verifiedAdminsPromise;
+
         let htmlString = '';
         users.forEach((user, index) => {
             const pfp = user.pfp ? `<img src="${user.pfp}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">` : `<div style="width:50px; height:50px; border-radius:50%; background:#596272; color:#fff; display:flex; justify-content:center; align-items:center; font-size:24px; font-weight:bold;">${user.username.charAt(0).toUpperCase()}</div>`;
+            
             let banStatusHtml = '';
             if (user.isBanned) banStatusHtml = user.banUntil ? `<span style="color:#d35400; font-weight:bold; font-size:12px;">Banned until ${new Date(user.banUntil).toLocaleDateString()}</span>` : `<span style="color:#c0392b; font-weight:bold; font-size:12px;">Permanently Banned</span>`;
+            
             let actionsHtml = '';
-            if (user.username === loggedInUser) actionsHtml = `<span style="color:#888; font-style:italic;">This is you</span>`;
-            else if (user.role === 'admin') actionsHtml = `<span style="color:#2980b9; font-weight:bold;">Co-Admin</span>`;
-            else actionsHtml += user.isBanned ? `<button class="btn-unban" onclick="event.stopPropagation(); banUser('${user.username}', 'unban')">Unban User</button>` : `<button class="btn-ban" onclick="event.stopPropagation(); banUser('${user.username}', 'ban')">Ban User</button>`;
+            if (user.username.toLowerCase() === loggedInUser.toLowerCase()) {
+                actionsHtml = `<span style="color:#888; font-style:italic;">This is you</span>`;
+            } else if (user.role === 'admin') {
+                if (user.isSuperAdmin) {
+                    actionsHtml = `<span style="color:#f39c12; font-weight:bold; border: 1px solid #f39c12; padding: 4px 8px; border-radius: 4px; font-size: 11px;">SUPER ADMIN</span>`;
+                } else {
+                    actionsHtml = `<button class="btn-reject" style="background:#e67e22;" onclick="event.stopPropagation(); revokeAdmin('${user.username}')">Revoke Admin</button>`;
+                }
+            } else {
+                actionsHtml += user.isBanned ? `<button class="btn-unban" onclick="event.stopPropagation(); banUser('${user.username}', 'unban')">Unban User</button>` : `<button class="btn-ban" onclick="event.stopPropagation(); banUser('${user.username}', 'ban')">Ban User</button>`;
+            }
+
+            // --- ADDED: Verified Admin Badge to User Management ---
+            const badgeHTML = window.getBadgeHTML(user.username);
 
             htmlString += `
                 <div class="user-result-card slide-down-item" style="animation-delay: ${index * 0.1}s; cursor:pointer;" onclick="window.location.href='../pages/user-profile.html?user=${user.username}'">
-                    <div class="user-info-group">${pfp}<div><h3 style="margin:0; font-size: 18px; color: #0F3047;">${user.username} <span style="font-size:12px; color:#888; text-transform:uppercase; border:1px solid #ccc; padding:2px 6px; border-radius:4px; margin-left:5px;">${user.role}</span></h3><div style="margin-top:4px;">${banStatusHtml}</div></div></div>
+                    <div class="user-info-group">${pfp}<div><h3 style="margin:0; font-size: 18px; color: #0F3047; display:flex; align-items:center;">${user.username} ${badgeHTML} <span style="font-size:12px; color:#888; text-transform:uppercase; border:1px solid #ccc; padding:2px 6px; border-radius:4px; margin-left:5px;">${user.role}</span></h3><div style="margin-top:4px;">${banStatusHtml}</div></div></div>
                     <div class="user-action-group">${actionsHtml}</div>
                 </div>`;
         });
         searchResults.innerHTML = htmlString;
     }
+
+    window.revokeAdmin = async function(username) {
+        const confirmed = await customConfirm("Revoke Access", `Are you sure you want to remove Admin privileges from ${username}?`, "Revoke Admin", "#e67e22");
+        if (!confirmed) return;
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/admin/users/${username}/revoke`, { method: 'PUT' });
+            if (response.ok) {
+                showCustomAlert("Success", `${username} is no longer an Admin.`, "success");
+                
+                // If we revoked admin, refresh the global badge list in the background!
+                window.verifiedAdminsPromise = fetch('http://localhost:3000/api/admins')
+                    .then(r => r.json())
+                    .then(data => { window.verifiedAdmins = data; });
+
+                userSearchInput.dispatchEvent(new Event('input')); 
+            } else {
+                const data = await response.json();
+                showCustomAlert("Error", data.error || "Failed to revoke access.", "error");
+            }
+        } catch(err) { showCustomAlert("Error", "Server error.", "error"); }
+    };
 
     window.banUser = async function(username, action) {
         let durationHours = 0; 
@@ -423,5 +557,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch(err) { showCustomAlert("Error", "Server error.", "error"); }
     };
 
-    fetchArticles();
+    // Make sure we wait for the admins to load before fetching initial data
+    window.verifiedAdminsPromise.then(() => fetchArticles());
 });

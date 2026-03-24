@@ -1,87 +1,3 @@
-// Main Dataset Pool
-// Note: Replace the "src" links with paths to your actual images in the assets folder!
-const arcadeLevelsPool = [
-    {
-        src: "https://via.placeholder.com/800x500.png?text=Man+with+7+fingers", 
-        isAI: true,
-        explanation: "This image is AI-generated. The generative model failed to render the anatomy correctly, giving the subject seven fingers on one hand—a common artifact in deepfakes.",
-        hotspots: [{ top: "50%", left: "40%", text: "Extra fingers" }]
-    },
-    {
-        src: "https://via.placeholder.com/800x500.png?text=Real+Photograph+of+a+City", 
-        isAI: false,
-        explanation: "This is a genuine photograph. The lighting, reflections, and background text are perfectly consistent with reality.",
-        hotspots: [] 
-    },
-    {
-        src: "https://via.placeholder.com/800x500.png?text=AI+Generated+Earrings", 
-        isAI: true,
-        explanation: "This is an AI-generated portrait. If you look closely at the jewelry, the earrings are completely asymmetrical and blend unnaturally into the skin.",
-        hotspots: [
-            { top: "60%", left: "30%", text: "Mismatched earring" },
-            { top: "62%", left: "70%", text: "Earring blending into skin" }
-        ]
-    },
-    {
-        src: "https://via.placeholder.com/800x500.png?text=Real+Portrait", 
-        isAI: false,
-        explanation: "This is a real photograph. The textures of the clothing, the stray hairs, and the background depth of field are all authentic.",
-        hotspots: []
-    },
-    {
-        src: "https://via.placeholder.com/800x500.png?text=AI+Generated+Text+Sign", 
-        isAI: true,
-        explanation: "This is AI-generated. While the overall image looks realistic, the text on the sign in the background is complete gibberish and alien-like, a dead giveaway for generative AI.",
-        hotspots: [{ top: "30%", left: "80%", text: "Gibberish text" }]
-    },
-    {
-        src: "https://via.placeholder.com/800x500.png?text=Real+Dog+Running", 
-        isAI: false,
-        explanation: "This is a real photo. The motion blur and lighting are physically accurate.",
-        hotspots: []
-    },
-    {
-        src: "https://via.placeholder.com/800x500.png?text=AI+Melted+Background", 
-        isAI: true,
-        explanation: "This is an AI generation. Look at the background objects—they melt into each other without clear physical boundaries.",
-        hotspots: [{ top: "20%", left: "85%", text: "Melting background elements" }]
-    },
-    {
-        src: "https://via.placeholder.com/800x500.png?text=Real+Street+Market", 
-        isAI: false,
-        explanation: "This is genuine. All the background text on the signs is perfectly legible and physically consistent.",
-        hotspots: []
-    },
-    {
-        src: "https://via.placeholder.com/800x500.png?text=AI+Glasses+Error", 
-        isAI: true,
-        explanation: "This is an AI-generated face. The frame of the glasses doesn't connect properly over the bridge of the nose.",
-        hotspots: [{ top: "40%", left: "50%", text: "Incomplete glasses frame" }]
-    },
-    {
-        src: "https://via.placeholder.com/800x500.png?text=Real+Crowd", 
-        isAI: false,
-        explanation: "This is a genuine photograph of a crowd. Every face in the background has consistent lighting and proportions.",
-        hotspots: []
-    },
-    {
-        src: "https://via.placeholder.com/800x500.png?text=AI+Zipper+Glitch", 
-        isAI: true,
-        explanation: "This is AI-generated. The zipper on the jacket merges directly into the fabric instead of functioning mechanically.",
-        hotspots: [{ top: "75%", left: "50%", text: "Nonsensical zipper" }]
-    },
-    {
-        src: "https://via.placeholder.com/800x500.png?text=Real+Historical+Photo", 
-        isAI: false,
-        explanation: "This is a real historical photo. The film grain is consistent throughout the entire image.",
-        hotspots: []
-    }
-];
-
-let currentSessionLevels = [];
-let currentLevelIndex = 0;
-let score = 0;
-
 document.addEventListener('DOMContentLoaded', () => {
     
     // Custom Alert Function
@@ -121,13 +37,46 @@ document.addEventListener('DOMContentLoaded', () => {
         return array;
     }
 
+    // --- NEW: AUTOMATED LEVEL GENERATOR ---
+    // This function creates 10 random levels using live APIs, completely bypassing manual URLs
+    function generateDynamicLevels() {
+        let levels = [];
+        
+        // Generate 5 FAKE (AI) Levels
+        for (let i = 0; i < 5; i++) {
+            levels.push({
+                // Add a random number to force a new image every time (Cache-busting)
+                src: `https://thispersondoesnotexist.com/?random=${Math.random()}`, 
+                isAI: true,
+                explanation: "This is an AI-generated face created by a Generative Adversarial Network (GAN). Since this image was generated live, we can't point to a specific spot, but look closely at the edges of the hair, the symmetry of the ears/glasses, or the background. GANs often struggle with these details and cause them to 'melt' together.",
+                hotspots: [] // No hotspots for dynamic images
+            });
+        }
+
+        // Generate 5 REAL Levels
+        for (let i = 0; i < 5; i++) {
+            levels.push({
+                // Picsum gives a random real photograph
+                src: `https://picsum.photos/800/500?random=${Math.random()}`, 
+                isAI: false,
+                explanation: "This is a genuine photograph pulled from a live photography database. Notice how the lighting, depth of field, and structural lines are perfectly logical and consistent.",
+                hotspots: []
+            });
+        }
+
+        // Shuffle the 10 levels so the user never knows if the next one is real or fake
+        return shuffleArray(levels);
+    }
+
+    // Game Variables
+    let currentSessionLevels = [];
+    let currentLevelIndex = 0;
+    let score = 0;
+
     // Initialize Game
     window.initGame = function() {
-        // 1. Shuffle the entire pool of images
-        const shuffledPool = shuffleArray([...arcadeLevelsPool]);
-        
-        // 2. Take only the first 10 items (or fewer if the pool is small)
-        currentSessionLevels = shuffledPool.slice(0, 10);
+        // Generate a fresh batch of 10 dynamic images every time they play
+        currentSessionLevels = generateDynamicLevels();
         
         currentLevelIndex = 0;
         score = 0;
@@ -141,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.loadLevel = function() {
-        // Pull the level from our randomized 10-item session array
         const level = currentSessionLevels[currentLevelIndex];
         
         // Reset UI
@@ -150,9 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('controls-area').style.display = 'block';
         document.getElementById('feedback-panel').style.display = 'none';
         
-        // Load Image
+        // Load Image (Show a loading state while the API fetches the image)
         const imgEl = document.getElementById('game-image');
+        imgEl.style.opacity = '0.5'; 
         imgEl.src = level.src;
+        
+        imgEl.onload = function() {
+            imgEl.style.opacity = '1';
+        };
     };
 
     window.makeGuess = function(userGuessedAI) {
@@ -191,24 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         feedbackText.innerText = level.explanation;
 
-        // If it's an AI image, dim the image and plot the hotspots
-        if (level.isAI && level.hotspots.length > 0) {
+        // Dim the image slightly if it's AI to match the theme
+        if (level.isAI) {
             imageStage.classList.add('dimmed');
-            
-            const hotspotContainer = document.getElementById('hotspots-container');
-            level.hotspots.forEach(spot => {
-                const dot = document.createElement('div');
-                dot.className = 'hotspot';
-                dot.style.top = spot.top;
-                dot.style.left = spot.left;
-                
-                const tooltip = document.createElement('span');
-                tooltip.className = 'tooltip';
-                tooltip.innerText = spot.text;
-                
-                dot.appendChild(tooltip);
-                hotspotContainer.appendChild(dot);
-            });
         }
     };
 
