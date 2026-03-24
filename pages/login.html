@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VerifEye | Login</title>
-    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="../css/login.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,19 +18,6 @@
         <div class="form-box login">
             <form action="">
                 <h1>Login & Unmask The Truth</h1>
-                <div class="input-box">
-                    <input type="text" placeholder="Username"  required>
-                    <i class='bx bxs-user'></i>
-                </div>
-
-                <div class="input-box">
-                    <input type="password" placeholder="Password"  required>
-                    <i class='bx bxs-lock-alt' ></i>
-                </div>
-
-                <div class="forgot-link">
-                    <a href="#">Forgot password?</a>
-                </div>
 
                 <div class="role-selector">
                     <input type="radio" id="role-user" name="loginRole" value="user" checked>
@@ -38,6 +25,20 @@
                     
                     <input type="radio" id="role-admin" name="loginRole" value="admin">
                     <label for="role-admin" class="role-btn">Admin</label>
+                </div>
+
+                <div class="input-box">
+                    <input type="text" placeholder="Username" required>
+                    <i class='bx bxs-user'></i>
+                </div>
+
+                <div class="input-box">
+                    <input type="password" placeholder="Password" required>
+                    <i class='bx bxs-lock-alt' ></i>
+                </div>
+
+                <div class="forgot-link">
+                    <a href="#">Forgot password?</a>
                 </div>
 
                 <button type="submit" class="btn">Login</button>
@@ -48,17 +49,17 @@
             <form action="">
                 <h1>Register & Start Verifying</h1>
                 <div class="input-box">
-                    <input type="text" placeholder="Username"  required>
+                    <input type="text" placeholder="Username" required>
                     <i class='bx bxs-user'></i>
                 </div>
 
                 <div class="input-box">
-                    <input type="email" placeholder="Email"  required>
+                    <input type="email" placeholder="Email" required>
                     <i class='bx bxs-envelope'></i>
                 </div>
 
                 <div class="input-box">
-                    <input type="password" placeholder="Password"  required>
+                    <input type="password" placeholder="Password" required>
                     <i class='bx bxs-lock-alt'></i>
                 </div>
 
@@ -78,7 +79,6 @@
                 <p>Already have an account?</p>
                 <button class="btn login-btn">Login</button>
             </div>
-
         </div>
     </div>
 
@@ -91,7 +91,7 @@
         </div>
     </div>
 
-    <script src="/js/login.js"></script>
+    <script src="../js/login.js"></script>
         
 </body>
 </html>

@@ -45,7 +45,6 @@
                         </svg>
                         <input type="text" id="article-search-input" placeholder="Search by title or author...">
                     </div>
-                    <a href="../pages/upload-article.html" class="post-article-btn" id="upload-article-link">Submit Article</a>
                 </div>
                 
                 <div class="filter-tabs">
@@ -57,25 +56,15 @@
             </div>
 
             <div id="loading-spinner" style="text-align: center; padding: 40px; color: #666;">Loading library...</div>
-
-            <div class="articles-grid" id="articles-grid" style="display: none;">
-                </div>
+            <div class="articles-grid" id="articles-grid" style="display: none;"></div>
             
             <div id="no-results-msg" style="display: none; text-align: center; padding: 40px; color: #888;">
                 No articles matched your search.
             </div>
-
         </div>
     </main>
 
-    <div id="custom-alert-overlay" class="custom-alert-overlay">
-        <div class="custom-alert-box" id="custom-alert-box">
-            <div class="custom-alert-icon" id="custom-alert-icon"></div>
-            <h2 class="custom-alert-title" id="custom-alert-title"></h2>
-            <p class="custom-alert-message" id="custom-alert-message"></p>
-            <button class="custom-alert-btn" onclick="closeCustomAlert()">OK</button>
-        </div>
-    </div>
+    <a href="../pages/upload-article.html" class="post-article-btn">Submit Article</a>
 
     <footer>
         <div class="footer-content">
