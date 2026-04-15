@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VerifEye | Spot The Fake Arcade</title>
-    
+
     <link rel="stylesheet" href="../css/selfassessment.css">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@
         <nav>
             <a href="../pages/homepage.html" class="logo" style="text-decoration: none; color: inherit; cursor: pointer;">
                 <img src="../assets/images/logo.png" alt="VerifEye">
-                <h2><div class="logoname">VerifEye</div></h2> 
+                <h2><div class="logoname">VerifEye</div></h2>
             </a>
             <ul>
                 <li><a href="../pages/homepage.html">Home</a></li>
@@ -27,7 +27,7 @@
                 <li><a href="../pages/selfassessment.html" class="active">Self-assessment</a></li>
                 <li><a href="../pages/Discussions.html">Discussions</a></li>
             </ul>
-            
+
             <div id="auth-status"></div>
         </nav>
     </header>
@@ -37,7 +37,7 @@
         <div class="arcade-wrapper">
             <div class="arcade-header">
                 <h1>Spot The Fake</h1>
-                <p>Test your intuition. Can you identify which images are real and which are AI-generated?</p>
+                <p>Take a 10-item challenge with 4 images, 3 audio clips, and 3 videos. Can you tell what is real and what was made by AI?</p>
                 <div class="score-board">
                     Score: <span id="current-score" style="color: #06629b;">0</span> / <span id="total-rounds">0</span>
                 </div>
@@ -45,11 +45,20 @@
 
             <div class="game-container" id="game-container">
                 <div class="image-stage" id="image-stage">
-                    <img id="game-image" src="" alt="Is this real or fake?">
+                    <div class="stage-meta">
+                        <span class="type-pill" id="media-type-pill">Image</span>
+                        <span class="round-pill" id="round-pill">Question 1 of 10</span>
+                    </div>
+
+                    <img id="game-image" src="" alt="Self-assessment image prompt">
+                    <audio id="game-audio" controls preload="metadata"></audio>
+                    <video id="game-video" controls preload="metadata"></video>
+
                     <div id="hotspots-container"></div>
                 </div>
 
                 <div class="controls-area" id="controls-area">
+                    <p class="media-prompt" id="media-prompt">Study the item, then make your call.</p>
                     <h3 style="margin-bottom: 20px; font-weight: 600;">What do you think?</h3>
                     <div class="button-group">
                         <button class="btn-guess real" onclick="makeGuess(false)">
@@ -67,10 +76,11 @@
                         <h2 id="feedback-title"></h2>
                     </div>
                     <p id="feedback-explanation" class="feedback-text"></p>
-                    <button class="btn-next" id="btn-next" onclick="nextRound()">Next Image ➔</button>
+                    <p id="feedback-source" class="feedback-source"></p>
+                    <button class="btn-next" id="btn-next" onclick="nextRound()">Next Item</button>
                 </div>
             </div>
-            
+
             <div class="end-screen" id="end-screen" style="display: none;">
                 <h2>Assessment Complete!</h2>
                 <div class="final-score" id="final-score"></div>

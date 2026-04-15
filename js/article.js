@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <h2 class="article-title">${article.title}</h2>
                         <div class="article-footer">
                             <span class="article-author" onclick="event.stopPropagation(); window.location.href='../pages/user-profile.html?user=${article.author}'" style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                                By <strong>${article.author}</strong>
+                                Suggested by <strong>${article.author}</strong>
                             </span>
                             <span class="article-date">${dateStr}</span>
                         </div>

@@ -4,6 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const path = require('path');
+const { buildSelfAssessmentQuiz } = require('./data/selfAssessmentDataset');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -153,6 +154,23 @@ async function createNotification(recipient, sender, senderPfp, type, threadId, 
 }
 
 app.get('/', (req, res) => { res.redirect('/pages/login.html'); });
+
+app.get('/api/self-assessment/quiz', (req, res) => {
+    try {
+        const excludedIds = typeof req.query.exclude === 'string' && req.query.exclude.trim()
+            ? req.query.exclude.split(',').map((id) => id.trim()).filter(Boolean)
+            : [];
+        const quiz = buildSelfAssessmentQuiz(excludedIds);
+        res.json({
+            totalItems: quiz.length,
+            counts: { images: 4, audio: 3, video: 3 },
+            items: quiz
+        });
+    } catch (error) {
+        console.error('Failed to build self-assessment quiz:', error);
+        res.status(500).json({ error: 'Failed to load self-assessment quiz' });
+    }
+});
 
 app.get('/api/notifications/:username', async (req, res) => {
     try {
