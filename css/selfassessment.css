@@ -98,14 +98,60 @@ main {
     overflow: hidden;
 }
 
+.stage-meta {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    right: 18px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    z-index: 5;
+}
+
+.type-pill,
+.round-pill {
+    background: rgba(255, 255, 255, 0.92);
+    color: #0F3047;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.image-stage audio,
+.image-stage video,
 .image-stage img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+    display: none;
+}
+
+.image-stage img,
+.image-stage video {
     transition: filter 0.5s ease;
 }
 
-.image-stage.dimmed img {
+.image-stage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+}
+
+.image-stage audio {
+    width: min(720px, calc(100% - 60px));
+    z-index: 2;
+}
+
+.image-stage video {
+    width: 100%;
+    height: 100%;
+    background: #000;
+}
+
+.image-stage.dimmed img,
+.image-stage.dimmed video,
+.image-stage.dimmed audio {
     filter: brightness(0.4) grayscale(0.5);
 }
 
@@ -192,6 +238,12 @@ main {
 .controls-area {
     padding: 40px;
     text-align: center;
+}
+
+.media-prompt {
+    color: #5f6b76;
+    font-size: 15px;
+    margin-bottom: 12px;
 }
 
 .button-group {
@@ -281,10 +333,20 @@ main {
     font-size: 16px;
     color: #555;
     line-height: 1.6;
-    margin-bottom: 25px;
+    margin-bottom: 12px;
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+}
+
+.feedback-source {
+    font-size: 14px;
+    color: #6e7a85;
+    margin-bottom: 25px;
+}
+
+.feedback-source a {
+    color: #06629b;
 }
 
 .btn-next {
@@ -418,4 +480,34 @@ main {
 @keyframes pageFadeInUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .arcade-header h1 {
+        font-size: 38px;
+    }
+
+    .image-stage {
+        height: 380px;
+    }
+
+    .stage-meta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .button-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-guess {
+        max-width: none;
+    }
+
+    .controls-area,
+    .feedback-panel,
+    .end-screen {
+        padding: 28px 22px;
+    }
 }

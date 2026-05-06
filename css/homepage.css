@@ -34,6 +34,7 @@ nav {
 
 .logo img{
     width: 60px;
+    filter: brightness(0) invert(1);
 }
 
 .logoname{
