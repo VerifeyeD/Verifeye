@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // Custom Alert Function
+    // --- CUSTOM ALERT FUNCTION ---
     window.showCustomAlert = function(title, message, type, onSuccessCallback = null) {
         const overlay = document.getElementById('custom-alert-overlay');
         const alertBox = document.getElementById('custom-alert-box');
@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Fisher-Yates Array Shuffle Algorithm
     function shuffleArray(array) {
         let currentIndex = array.length, randomIndex;
         while (currentIndex !== 0) {
@@ -37,47 +36,85 @@ document.addEventListener('DOMContentLoaded', () => {
         return array;
     }
 
-    // --- NEW: AUTOMATED LEVEL GENERATOR ---
-    // This function creates 10 random levels using live APIs, completely bypassing manual URLs
+    // --- 1. YOUR 10-ITEM DATASET ---
+    const localDataset = [
+        // --- 5 AI IMAGES ---
+        {
+            src: "../assets/images/dataset/ai_1.jpg", 
+            isAI: true,
+            explanation: "This is AI-generated. Notice the structural errors here.",
+            // I added a temporary hotspot here so you can SEE the marking feature work!
+            hotspots: [{ x: 50, y: 50, text: "Temporary Mark: Look here!" }] 
+        },
+        {
+            src: "../assets/images/dataset/ai_2.jpg", 
+            isAI: true,
+            explanation: "AI generated. The background details blend together unnaturally.",
+            hotspots: [{ x: 40, y: 60, text: "Temporary Mark: Weird blending" }] 
+        },
+        {
+            src: "../assets/images/dataset/ai_3.jpg", 
+            isAI: true,
+            explanation: "AI generated. Look closely at the lighting and shadows; they contradict each other.",
+            hotspots: [{ x: 70, y: 30, text: "Temporary Mark: Lighting error" }] 
+        },
+        {
+            src: "../assets/images/dataset/ai_4.jpg", 
+            isAI: true,
+            explanation: "AI generated. The textures on these surfaces are completely inconsistent.",
+            hotspots: [{ x: 20, y: 80, text: "Temporary Mark: Texture glitch" }] 
+        },
+        {
+            src: "../assets/images/dataset/ai_5.jpg", 
+            isAI: true,
+            explanation: "AI generated. There is nonsensical text or warped geometry in this area.",
+            hotspots: [{ x: 80, y: 50, text: "Temporary Mark: Warped shape" }] 
+        },
+
+        // --- 5 REAL IMAGES ---
+        {
+            src: "../assets/images/dataset/real_1.jpg", 
+            isAI: false,
+            explanation: "Genuine photograph. The physics of the scene make perfect sense.",
+            hotspots: [] // Always empty for real images
+        },
+        {
+            src: "../assets/images/dataset/real_2.jpg", 
+            isAI: false,
+            explanation: "Genuine photograph. Notice the consistent depth of field.",
+            hotspots: [] 
+        },
+        {
+            src: "../assets/images/dataset/real_3.jpg", 
+            isAI: false,
+            explanation: "Genuine photograph. All structural lines are straight and logical.",
+            hotspots: [] 
+        },
+        {
+            src: "../assets/images/dataset/real_4.jpg", 
+            isAI: false,
+            explanation: "Genuine photograph. The textures and materials look physically accurate.",
+            hotspots: [] 
+        },
+        {
+            src: "../assets/images/dataset/real_5.jpg", 
+            isAI: false,
+            explanation: "Genuine photograph. Complex details like foliage or crowds are rendered perfectly.",
+            hotspots: [] 
+        }
+    ];
+
     function generateDynamicLevels() {
-        let levels = [];
-        
-        // Generate 5 FAKE (AI) Levels
-        for (let i = 0; i < 5; i++) {
-            levels.push({
-                // Add a random number to force a new image every time (Cache-busting)
-                src: `https://thispersondoesnotexist.com/?random=${Math.random()}`, 
-                isAI: true,
-                explanation: "This is an AI-generated face created by a Generative Adversarial Network (GAN). Since this image was generated live, we can't point to a specific spot, but look closely at the edges of the hair, the symmetry of the ears/glasses, or the background. GANs often struggle with these details and cause them to 'melt' together.",
-                hotspots: [] // No hotspots for dynamic images
-            });
-        }
-
-        // Generate 5 REAL Levels
-        for (let i = 0; i < 5; i++) {
-            levels.push({
-                // Picsum gives a random real photograph
-                src: `https://picsum.photos/800/500?random=${Math.random()}`, 
-                isAI: false,
-                explanation: "This is a genuine photograph pulled from a live photography database. Notice how the lighting, depth of field, and structural lines are perfectly logical and consistent.",
-                hotspots: []
-            });
-        }
-
-        // Shuffle the 10 levels so the user never knows if the next one is real or fake
-        return shuffleArray(levels);
+        // Shuffles the array and selects all 10 items for the game
+        return shuffleArray([...localDataset]).slice(0, 10); 
     }
 
-    // Game Variables
     let currentSessionLevels = [];
     let currentLevelIndex = 0;
     let score = 0;
 
-    // Initialize Game
     window.initGame = function() {
-        // Generate a fresh batch of 10 dynamic images every time they play
         currentSessionLevels = generateDynamicLevels();
-        
         currentLevelIndex = 0;
         score = 0;
         
@@ -92,18 +129,26 @@ document.addEventListener('DOMContentLoaded', () => {
     window.loadLevel = function() {
         const level = currentSessionLevels[currentLevelIndex];
         
-        // Reset UI
         document.getElementById('image-stage').classList.remove('dimmed');
         document.getElementById('hotspots-container').innerHTML = '';
         document.getElementById('controls-area').style.display = 'block';
         document.getElementById('feedback-panel').style.display = 'none';
         
-        // Load Image (Show a loading state while the API fetches the image)
         const imgEl = document.getElementById('game-image');
         imgEl.style.opacity = '0.5'; 
         imgEl.src = level.src;
         
+        // --- THE ZOOM FIX FOR WATERMARKS ---
+        // This zooms the image by 15% and anchors it to the top, pushing the bottom watermark out of view.
+        imgEl.style.transform = 'scale(1.15)'; 
+        imgEl.style.transformOrigin = 'center top';
+        
         imgEl.onload = function() {
+            imgEl.style.opacity = '1';
+        };
+        
+        imgEl.onerror = function() {
+            imgEl.src = "https://via.placeholder.com/800x500?text=Image+Not+Found+-+Check+File+Name";
             imgEl.style.opacity = '1';
         };
     };
@@ -121,7 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.showFeedback = function(isCorrect, level) {
-        // Hide controls, show feedback
         document.getElementById('controls-area').style.display = 'none';
         
         const feedbackPanel = document.getElementById('feedback-panel');
@@ -129,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const feedbackIcon = document.getElementById('feedback-icon');
         const feedbackText = document.getElementById('feedback-explanation');
         const imageStage = document.getElementById('image-stage');
+        const hotspotsContainer = document.getElementById('hotspots-container');
 
         feedbackPanel.style.display = 'block';
 
@@ -144,9 +189,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         feedbackText.innerText = level.explanation;
 
-        // Dim the image slightly if it's AI to match the theme
         if (level.isAI) {
             imageStage.classList.add('dimmed');
+        }
+
+        // --- THE MARKING FEATURE RENDERER ---
+        hotspotsContainer.innerHTML = ''; 
+        if (level.hotspots && level.hotspots.length > 0) {
+            level.hotspots.forEach(spot => {
+                const spotEl = document.createElement('div');
+                spotEl.className = 'hotspot';
+                spotEl.style.left = `${spot.x}%`;
+                spotEl.style.top = `${spot.y}%`;
+                
+                const tooltip = document.createElement('span');
+                tooltip.className = 'tooltip';
+                tooltip.innerText = spot.text;
+                
+                spotEl.appendChild(tooltip);
+                hotspotsContainer.appendChild(spotEl);
+            });
         }
     };
 
@@ -162,7 +224,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.showEndScreen = function() {
         document.getElementById('game-container').style.display = 'none';
         document.getElementById('end-screen').style.display = 'block';
-        
         document.getElementById('final-score').innerText = `${score}/${currentSessionLevels.length}`;
         
         const msgEl = document.getElementById('final-message');
@@ -181,6 +242,19 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('current-score').innerText = score;
     }
 
-    // Start the game on load
     initGame();
+
+    // --- THE MAGIC COORDINATE FINDER ---
+    document.addEventListener('click', function(e) {
+        const imageStage = document.getElementById('image-stage');
+        if (imageStage && imageStage.contains(e.target) && e.target.id === 'game-image') {
+            const rect = imageStage.getBoundingClientRect();
+            const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+            const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+            
+            const copyText = `{ x: ${x}, y: ${y}, text: "Explain the AI mistake here" }`;
+            prompt("Copy this code and paste it into your localDataset hotspots array:", copyText);
+        }
+    });
+
 });
